@@ -1,0 +1,62 @@
+---
+title: Identificar portas seriais com PowerShell
+description: Listar as portas COM do Windows por linha de comando, como alternativa ao Gerenciador de Dispositivos.
+---
+
+## O que fazer
+
+Listar as portas seriais do computador usando o PowerShell.
+
+## Por que fazer
+
+É mais rápido e pode ser copiado para a documentação da equipe. Também serve para conferir o resultado do Gerenciador de Dispositivos.
+
+## O que você precisa
+
+- PowerShell (não precisa ser administrador).
+- Cabo console conectado.
+
+## Como executar
+
+### Listar portas seriais
+
+```powershell title="Win32_SerialPort"
+Get-CimInstance Win32_SerialPort |
+  Select-Object DeviceID, Name
+```
+
+**O que faz:** consulta o Windows pelas portas seriais conhecidas e mostra só o identificador (`DeviceID`) e o nome.
+
+**Resultado esperado:** uma linha por porta, por exemplo `COM3` e `USB Serial Port (COM3)`.
+
+<Callout type="info">
+Alguns adaptadores USB-serial não aparecem em `Win32_SerialPort`. Se a lista vier vazia mesmo com o cabo conectado, use as alternativas abaixo ou o [Gerenciador de Dispositivos](/docs/anamnese/porta-com-gerenciador).
+</Callout>
+
+### Alternativas
+
+```powershell title="Nomes das portas"
+[System.IO.Ports.SerialPort]::GetPortNames()
+```
+
+```powershell title="Dispositivos da classe Ports"
+Get-PnpDevice -Class Ports | Select-Object Status, FriendlyName
+```
+
+## Resultado esperado
+
+Pelo menos uma porta `COMx` presente enquanto o adaptador está conectado.
+
+## Como verificar
+
+Rode o comando com o adaptador conectado e depois desconectado. A porta deve aparecer e sumir.
+
+## Se não funcionar
+
+- **Lista vazia:** tente as alternativas, outra porta USB ou outro adaptador.
+- **Erro de permissão:** abra o PowerShell novamente; os comandos acima não exigem administrador.
+
+<Checklist
+  id="porta-com-powershell"
+  items={['Comando executado', 'Mesma porta COM confirmada pelos dois métodos']}
+/>

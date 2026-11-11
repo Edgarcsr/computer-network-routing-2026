@@ -1,0 +1,22 @@
+---
+title: Riscos técnicos
+description: Os pontos de atenção do kickoff e como evitá-los.
+---
+
+<Callout type="warn">
+Os dois riscos que mais podem quebrar a avaliação são o **empate de saltos** e o **tempo de convergência** do RIP. Os dois precisam ser resolvidos no desenho da topologia.
+</Callout>
+
+| Risco | O que acontece | Como evitar |
+|---|---|---|
+| Empate de saltos até SP | O IOS balanceia entre até 4 caminhos de mesmo custo e o traceroute alterna. Num anel simples de 8 roteadores, a ilha oposta a SP fica a 4 saltos pelos dois lados. | Enlaces extras (cordas) que quebrem o empate, ou `offset-list` documentado. Conferir ilha por ilha no G2. |
+| Convergência lenta | Com enlace que cai "em silêncio", a rota só é invalidada após 180 s e pode ficar em holddown por mais 180 s. | Medir o tempo real no ensaio; padronizar como o enlace será desligado; se preciso, `timers basic` reduzidos e iguais em todos. |
+| Tempo do Packet Tracer | O simulador converge diferente do equipamento real. | Usar o PT para validar caminhos, não tempos. |
+| RIP ignora largura de banda | Um serial lento conta o mesmo que uma FastEthernet. | Tratar como conteúdo: é ótima pergunta para a arguição. |
+| Traceroute filtrado | O padrão do Linux usa UDP, que firewalls bloqueiam; saltos aparecem como `* * *`. | `traceroute -I` (ICMP) ou `-T`; instalar o pacote nas VMs antes. |
+| Sem caminho de volta | O firewall não sabe chegar nas ilhas e a resposta se perde. | Rotas estáticas de retorno (`192.168.0.0/16` e `10.0.0.0/8` via SP), `ip_forward` e NAT. |
+| Rede compartilhada | Um erro de uma equipe (IP duplicado, rede errada, auto-summary) derruba outras ilhas. | Plano de IPs único, `description` em toda interface, mudanças só na janela do Comitê. |
+| Roteadores com config antiga | Senhas desconhecidas ou rotas de turmas anteriores. | Na semana 1: `write erase`, recuperação de senha se preciso, backup das configs. |
+| Seriais sem clock | O enlace serial não sobe. | `clock rate` no lado DCE, verificado com `show controllers serial`. |
+| VMs fora da rede | VM em NAT ou Wi-Fi não recebe IP da ilha. | Modo bridge na interface cabeada; IP fixo via netplan. |
+| Tempo de laboratório | Uma semana só para deploy é apertada com 8 equipes. | Scripts prontos e testados no PT antes da semana 4; reservar horário extra. |

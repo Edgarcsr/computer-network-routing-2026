@@ -1,0 +1,65 @@
+---
+title: Verificar as imagens Ubuntu Desktop
+description: Confirmar que cada ilha tem uma imagem ou VM Ubuntu Desktop utilizável.
+---
+
+## O que fazer
+
+Descobrir se há imagem ou VM Ubuntu Desktop disponível em cada ilha e qual a versão.
+
+## Por que fazer
+
+Cada ilha precisa de no mínimo 2 VMs Ubuntu Desktop como clientes de teste (`ping`, `traceroute`).
+
+## O que você precisa
+
+- Hipervisor identificado ([procedimento anterior](/docs/anamnese/hipervisor)).
+
+## Como executar
+
+<Steps>
+<Step>
+
+Abra o hipervisor e liste as VMs existentes. No VirtualBox, também é possível por terminal:
+
+```powershell title="VirtualBox · listar VMs"
+& "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" list vms
+```
+
+</Step>
+<Step>
+
+Se houver VM Ubuntu, inicie-a e confirme a versão dentro dela:
+
+```bash title="Ubuntu · versão"
+cat /etc/os-release
+```
+
+</Step>
+<Step>
+
+Se não houver VM, procure a imagem (`.iso`) e registre onde está.
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Uma VM Ubuntu Desktop funcional ou uma ISO disponível, com versão anotada.
+
+<Callout type="warn" title="A levantar">
+Se o `traceroute` está instalado nas VMs. Ele será necessário na avaliação e deve ser instalado antes.
+</Callout>
+
+## Como verificar
+
+A VM inicia e chega ao desktop.
+
+## Se não funcionar
+
+- **Nenhuma imagem disponível:** registre e avise o líder; é um bloqueio para o deploy.
+
+<Checklist
+  id="imagens-ubuntu"
+  items={['VMs/imagens Ubuntu listadas', 'Versão registrada', 'Ausências comunicadas ao líder']}
+/>

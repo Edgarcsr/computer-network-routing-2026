@@ -15,7 +15,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Fumadocs on TanStack Start',
+        title: 'InfraLab — Portal de implantação de redes',
       },
     ],
     links: [{ rel: 'stylesheet', href: appCss }],
@@ -25,7 +25,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <html suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

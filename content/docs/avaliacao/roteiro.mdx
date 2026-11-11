@@ -1,0 +1,69 @@
+---
+title: Roteiro da avaliação
+description: Os oito passos do procedimento de avaliação de cada ilha.
+---
+
+<Steps>
+<Step>
+
+**Diagrama.** Apresente o diagrama final e explique, pela contagem de saltos, por que a primária vence e qual é a contingência.
+
+</Step>
+<Step>
+
+**Tabela de rotas.** No roteador da ilha:
+
+```bash title="Cisco IOS"
+show ip route
+show ip protocols
+```
+
+Esperado: a rota `0.0.0.0/0` aprendida por RIP (código `R*`) com a métrica prevista.
+
+</Step>
+<Step>
+
+**Rota primária.** De uma VM da ilha:
+
+```bash title="Ubuntu"
+traceroute -n -I <site>
+```
+
+O caminho até o firewall Linux deve bater salto a salto com o diagrama. O site é escolhido pelo professor na hora.
+
+</Step>
+<Step>
+
+**Falha.** O professor escolhe um enlace da primária e o desliga com `shutdown` na interface (ou retirando o cabo, conforme combinado no G4). O cronômetro começa.
+
+</Step>
+<Step>
+
+**Convergência.** Acompanhe `show ip route` e `debug ip rip` e diga quando a rede convergiu. A janela máxima é definida no G4 (referência: 4 minutos).
+
+</Step>
+<Step>
+
+**Rota de contingência.** Novo `traceroute`, que deve percorrer o caminho de contingência do diagrama e continuar passando por SP.
+
+</Step>
+<Step>
+
+**Arguição.** O professor pergunta a qualquer integrante sobre a configuração, os temporizadores do RIP e o tempo de convergência observado.
+
+</Step>
+<Step>
+
+**Restauração.** O enlace volta (`no shutdown`), a rede retorna à primária e a próxima ilha é chamada.
+
+</Step>
+</Steps>
+
+<Callout type="warn">
+Nenhuma outra equipe mexe na rede durante a avaliação de uma ilha, porque desligar um enlace afeta outras ilhas.
+</Callout>
+
+<Checklist
+  id="roteiro-avaliacao"
+  items={['Diagrama e saltos explicados', 'show ip route com R* e métrica prevista', 'Traceroute da primária confere', 'Convergência dentro da janela', 'Traceroute da contingência confere', 'Todos preparados para a arguição']}
+/>

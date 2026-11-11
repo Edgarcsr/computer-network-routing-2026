@@ -1,0 +1,42 @@
+---
+title: Requisitos obrigatórios
+description: R1 a R9 do kickoff, verificados na avaliação, e o plano de endereçamento sugerido.
+---
+
+<Callout type="error" title="Atenção">
+O não cumprimento de **R1 a R5** impede o teste de failover. O protocolo entre os roteadores é **RIP versão 2**. Não use OSPF.
+</Callout>
+
+| # | Requisito | Resumo |
+|---|---|---|
+| R1 | Roteamento | Apenas RIP v2 entre os roteadores, com `no auto-summary`. Rotas estáticas só no roteador SP. |
+| R2 | Rota padrão | SP tem `ip route 0.0.0.0 0.0.0.0 <firewall>` e a anuncia com `default-information originate`. Nenhum outro roteador tem rota padrão estática. |
+| R3 | Dois caminhos | Cada ilha tem ao menos dois caminhos até SP sem enlaces em comum. SP é a única exceção. |
+| R4 | Previsibilidade | A rota primária tem menos saltos que a de contingência. Empate só se a equipe documentar o balanceamento e o comportamento do traceroute. |
+| R5 | Retorno | O firewall Linux conhece o caminho de volta para as redes das ilhas e faz NAT. |
+| R6 | LAN da ilha | A FastEthernet da ilha fica como `passive-interface` no RIP. |
+| R7 | VMs | Ao menos 2 VMs Ubuntu Desktop por ilha, em modo bridge, IP fixo, gateway no roteador e DNS funcionando. |
+| R8 | Simulação | A topologia completa roda no Packet Tracer, com os mesmos endereços e rotas previstas, antes de qualquer configuração no laboratório. |
+| R9 | Documentação | `show running-config` final de cada roteador entregue em texto. |
+
+## Plano de endereçamento sugerido
+
+O Comitê pode mudar, desde que o professor aprove.
+
+| Uso | Faixa | Exemplo |
+|---|---|---|
+| LAN da ilha N | `192.168.N.0/24` | Ilha 3: gateway `192.168.3.1` |
+| Enlace entre ilha A e B (A < B) | `10.A.B.0/30` | Ilhas 2 e 5: `10.2.5.1` e `10.2.5.2` |
+| SP ↔ firewall Linux | `10.0.0.0/30` | SP `10.0.0.1`, firewall `10.0.0.2` |
+
+<Callout type="warn" title="Divergência a resolver no G2">
+O kickoff sugere `192.168.N.0/24` para as LANs. A tabela inicial da equipe usa `192.168.10.0/24`, `192.168.20.0/24` etc. O plano definitivo depende da aprovação do professor.
+</Callout>
+
+## Organização
+
+- **Professor:** aprova topologia e endereçamento, libera o deploy e escolhe o enlace a desligar.
+- **Comitê de Backbone (8 líderes):** topologia comum, plano de IPs, padrões de configuração e janela de mudanças.
+- **Líder:** distribui tarefas, responde pelo roteador e enlaces da ilha, e é o único canal com o professor.
+- **Equipe SP (extra):** rota padrão, anúncio via RIP e integração com o firewall Linux.
+- **Dono do enlace:** a equipe do lado DCE do serial (ou a de menor número no Ethernet); configura o clock rate.

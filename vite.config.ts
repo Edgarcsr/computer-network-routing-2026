@@ -14,6 +14,8 @@ for await (const entry of glob('**/*.mdx', { cwd: 'content/docs' })) {
 }
 
 export default defineConfig({
+  // GitHub Pages serve o projeto em /<repo>/; defina BASE_PATH no build.
+  base: process.env.BASE_PATH ?? '/',
   server: {
     port: 3000,
   },

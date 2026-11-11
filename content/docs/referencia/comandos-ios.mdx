@@ -1,0 +1,80 @@
+---
+title: Comandos Cisco IOS de levantamento
+description: Cada comando de anamnese explicado individualmente, com contexto de uso e resultado esperado.
+---
+
+<Callout type="info">
+Todos os comandos abaixo são de **consulta** e não alteram a configuração. Nem todos estarão disponíveis em todos os equipamentos ou versões de IOS.
+</Callout>
+
+## show version
+
+```bash title="Cisco IOS"
+show version
+```
+
+**Quando usar:** primeiro comando em qualquer roteador, para identificar o equipamento.
+
+**O que mostra:** versão do IOS, arquivo de imagem, modelo, memória, tempo ligado, contagem de interfaces e registrador de configuração.
+
+**Resultado esperado:** texto longo, com linhas como `Cisco IOS Software` e `System image file`.
+
+## show ip interface brief
+
+```bash title="Cisco IOS"
+show ip interface brief
+```
+
+**Quando usar:** para listar interfaces, IPs e estado.
+
+**O que mostra:** uma linha por interface com `IP-Address`, `Status` e `Protocol`.
+
+**Resultado esperado:** `unassigned` e `administratively down` em roteador limpo; `up/up` em interface com enlace funcionando.
+
+## show controllers serial
+
+```bash title="Cisco IOS"
+show controllers serial
+```
+
+**Quando usar:** para saber se a serial tem cabo DCE ou DTE e qual clock rate.
+
+**O que mostra:** detalhes do hardware de cada interface serial.
+
+**Resultado esperado:** `DCE` com `clock rate`, `DTE`, ou indicação de cabo ausente. Sem interfaces seriais, não há saída útil.
+
+## show running-config
+
+```bash title="Cisco IOS"
+show running-config
+```
+
+**Quando usar:** para ver a configuração atual, inclusive de turmas anteriores. Também será usado para entregar o R9.
+
+**O que mostra:** toda a configuração em memória.
+
+**Resultado esperado:** hostname, interfaces, senhas e protocolos. Pagine com espaço.
+
+## show inventory
+
+```bash title="Cisco IOS"
+show inventory
+```
+
+**Quando usar:** para identificar chassi e módulos (WIC).
+
+**O que mostra:** nome, descrição, PID e número de série de cada componente.
+
+**Resultado esperado:** o chassi e os módulos instalados.
+
+## show ip route
+
+```bash title="Cisco IOS"
+show ip route
+```
+
+**Quando usar:** para ver a tabela de roteamento. Na anamnese serve para detectar rotas antigas.
+
+**O que mostra:** rotas conhecidas e seus códigos (`C` conectada, `S` estática, `R` RIP).
+
+**Resultado esperado:** em roteador limpo, vazia ou só com redes conectadas; `Gateway of last resort is not set`.

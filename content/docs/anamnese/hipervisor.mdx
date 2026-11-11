@@ -1,0 +1,54 @@
+---
+title: Identificar o hipervisor instalado
+description: Descobrir qual software de virtualização cada estação tem.
+---
+
+## O que fazer
+
+Descobrir qual hipervisor está instalado nas estações da ilha.
+
+## Por que fazer
+
+As VMs Ubuntu precisam rodar em modo bridge, e o procedimento para configurar isso depende do hipervisor.
+
+## O que você precisa
+
+- Acesso às estações da ilha.
+
+## Como executar
+
+Procure o hipervisor na lista de programas instalados do Windows ou com PowerShell:
+
+```powershell title="Programas instalados"
+Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |
+  Where-Object { $_.DisplayName -match 'VirtualBox|VMware|Hyper-V' } |
+  Select-Object DisplayName, DisplayVersion
+```
+
+Para verificar o Hyper-V (exige PowerShell como administrador):
+
+```powershell title="Recurso Hyper-V"
+Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All
+```
+
+## Resultado esperado
+
+Nome e versão do hipervisor, ou nenhuma linha se não houver nenhum.
+
+<Callout type="warn" title="A levantar">
+Qual hipervisor cada ilha usa. Não assuma que é o mesmo em todas as estações.
+</Callout>
+
+## Como verificar
+
+Abra o programa e confirme que ele inicia.
+
+## Se não funcionar
+
+- **Nada encontrado:** o hipervisor pode ter instalação portátil; procure o atalho na área de trabalho.
+- **Erro no comando Hyper-V:** abra o PowerShell como administrador.
+
+<Checklist
+  id="hipervisor"
+  items={['Hipervisor e versão registrados', 'Conferido em mais de uma estação']}
+/>

@@ -1,0 +1,42 @@
+---
+title: Levantar as estações de trabalho
+description: Registrar quantas estações cada ilha tem e o switch que as liga ao roteador.
+---
+
+## O que fazer
+
+Contar as estações de cada ilha (4 ou 6) e registrar o switch que as conecta à FastEthernet do roteador.
+
+## Por que fazer
+
+As estações hospedam as VMs Ubuntu. Cada ilha precisa de no mínimo duas VMs, então precisa de estações suficientes.
+
+## O que você precisa
+
+- Acesso físico à ilha.
+
+## Como executar
+
+<Steps>
+<Step>Conte as estações da ilha e anote o número.</Step>
+<Step>Identifique o switch da ilha: modelo e quantidade de portas.</Step>
+<Step>Confira se cada estação está ligada ao switch e se o switch está ligado à FastEthernet do roteador.</Step>
+<Step>Registre no [modelo do inventário](/docs/anamnese/modelo-inventario).</Step>
+</Steps>
+
+## Resultado esperado
+
+Número de estações (4 ou 6), modelo do switch e mapa simples de ligação.
+
+## Como verificar
+
+Número de portas do switch suficiente para estações mais uplink do roteador.
+
+## Se não funcionar
+
+- **Estação sem rede física:** registre nas observações e avise o líder.
+
+<Checklist
+  id="estacoes"
+  items={['Número de estações anotado', 'Switch da ilha identificado', 'Ligações conferidas']}
+/>

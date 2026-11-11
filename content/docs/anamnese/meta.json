@@ -1,0 +1,27 @@
+{
+  "title": "01 · Anamnese",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "---Acesso ao roteador---",
+    "conectar-console",
+    "porta-com-gerenciador",
+    "porta-com-powershell",
+    "putty-serial",
+    "---Levantamento do roteador---",
+    "modelo-e-ios",
+    "interfaces",
+    "modulos-wic",
+    "seriais-e-ethernet",
+    "cabos-dce-dte",
+    "clock-rate",
+    "configs-antigas",
+    "---Levantamento das ilhas---",
+    "estacoes",
+    "hipervisor",
+    "imagens-ubuntu",
+    "---Fechamento---",
+    "modelo-inventario",
+    "fechar-inventario"
+  ]
+}

@@ -1,0 +1,67 @@
+---
+title: Consultar configurações antigas
+description: Ver o que há de configuração prévia, fazer backup em texto e saber quando limpar.
+---
+
+## O que fazer
+
+Ver a configuração salva e a em execução, **guardar uma cópia em texto** e só então decidir, com o Comitê, se o roteador precisa ser limpo.
+
+## Por que fazer
+
+Roteadores podem ter senhas desconhecidas ou rotas de turmas anteriores, que interferem no projeto. Ao fim do projeto, os roteadores voltam ao estado combinado com o professor, então o backup importa.
+
+## O que você precisa
+
+- Sessão aberta no PuTTY, em modo privilegiado.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Ative o registro da sessão no PuTTY (**Session → Logging → All session output**) e escolha um arquivo, por exemplo `R1-config-original.txt`.
+
+</Step>
+<Step>
+
+Veja a configuração em execução e a salva:
+
+```bash title="Cisco IOS · modo EXEC privilegiado"
+show running-config
+show startup-config
+```
+
+</Step>
+<Step>
+
+Anote no inventário o que chama atenção: hostname, senhas, rotas, protocolos de roteamento ou interfaces configuradas.
+
+</Step>
+</Steps>
+
+<Callout type="error" title="Antes de apagar qualquer coisa">
+Apagar a configuração (`write erase`) só deve ser feito depois de ter o backup em texto e com o acordo do líder e do Comitê. Toda mudança no laboratório é registrada pelo líder: o quê, onde, quem e quando.
+</Callout>
+
+<Callout type="warn" title="A levantar">
+Como recuperar o acesso se a senha for desconhecida. O procedimento depende do modelo e da versão do IOS e ainda não foi levantado. Leve o caso ao líder e ao professor.
+</Callout>
+
+## Resultado esperado
+
+A configuração aparece na tela e fica salva no arquivo de log. Um roteador limpo mostra uma configuração mínima.
+
+## Como verificar
+
+O arquivo `.txt` de backup abre e contém a configuração completa.
+
+## Se não funcionar
+
+- **Pede senha em `enable`:** registre "senha desconhecida" no inventário.
+- **Configuração gigante:** o log do PuTTY captura tudo; não é preciso copiar da tela.
+
+<Checklist
+  id="configs-antigas"
+  items={['Backup da configuração em .txt', 'Configuração antiga resumida no inventário', 'Decisão de limpar combinada com o líder']}
+/>

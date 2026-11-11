@@ -1,0 +1,52 @@
+---
+title: Glossário
+description: Conceitos técnicos do projeto em linguagem direta.
+---
+
+## DCE e DTE
+
+Lados de um enlace serial. O **DCE** fornece o sinal de clock; o **DTE** o recebe. O lado DCE precisa de `clock rate`, e a equipe dele é a dona do enlace.
+
+## WIC
+
+Módulo de interface que se encaixa no roteador e adiciona portas, como as seriais. Sem WIC, o roteador pode não ter serial.
+
+## Clock rate
+
+Velocidade de clock definida no lado DCE. Sem ele, o enlace serial não sobe.
+
+## RIP v2
+
+Protocolo de roteamento por vetor de distância, usado entre os roteadores. Sua métrica é a **contagem de saltos**, e ele ignora a largura de banda.
+
+## no auto-summary
+
+Comando do RIP que impede o resumo automático de redes. É obrigatório (R1).
+
+## Rota padrão
+
+`0.0.0.0/0`: caminho para a internet. Fica estática só em SP, que a anuncia por RIP com `default-information originate`.
+
+## passive-interface
+
+Faz a interface da LAN da ilha não enviar atualizações RIP (R6).
+
+## Rota primária e rota de contingência
+
+A primária é o caminho de menos saltos até SP. A contingência é o caminho alternativo que passa a valer quando um enlace da primária cai.
+
+## Empate de saltos
+
+Quando dois caminhos têm o mesmo número de saltos, o IOS balanceia entre até 4 caminhos e o traceroute alterna. Precisa ser resolvido no desenho.
+
+## Convergência
+
+Tempo que a rede leva para se reorganizar depois de uma falha. Se a queda for "silenciosa", a rota só é invalidada após 180 s e pode ficar em holddown por mais 180 s.
+
+## Traceroute
+
+`traceroute -n -I <site>` no Ubuntu usa ICMP. O padrão usa UDP, que firewalls costumam bloquear, mostrando `* * *`.
+
+## Rede de retorno
+
+Caminho que o firewall Linux usa para devolver respostas às ilhas: rotas estáticas `192.168.0.0/16` e `10.0.0.0/8` via SP, mais `ip_forward` e NAT (masquerade).

@@ -1,0 +1,54 @@
+---
+title: Identificar os módulos WIC
+description: Descobrir quais módulos de interface (WIC) estão instalados com show inventory.
+---
+
+## O que fazer
+
+Descobrir quais módulos WIC existem em cada roteador e quantas portas seriais cada um fornece.
+
+## Por que fazer
+
+As interfaces seriais vêm dos módulos WIC. Sem módulo, não há serial, e isso decide quantos enlaces seriais o backbone pode ter.
+
+## O que você precisa
+
+- Sessão aberta no PuTTY, em modo privilegiado.
+
+## Como executar
+
+```bash title="Cisco IOS · modo EXEC privilegiado"
+show inventory
+```
+
+**O que faz:** lista os componentes de hardware com nome, descrição e número de série.
+
+**O que procurar:** entradas de módulos (WIC) além do chassi, e o identificador do produto (`PID`) de cada um.
+
+Complemente com o `show version`, que informa quantas interfaces Serial o sistema reconhece:
+
+```bash title="Cisco IOS"
+show version
+```
+
+## Resultado esperado
+
+O chassi e, se existirem, os módulos WIC instalados.
+
+<Callout type="warn" title="A levantar">
+Modelo e quantidade de WIC por roteador. Se o `show inventory` não mostrar o módulo, confira fisicamente o painel traseiro e registre a diferença.
+</Callout>
+
+## Como verificar
+
+O número de portas seriais deduzido dos módulos deve coincidir com as interfaces Serial vistas em [interfaces](/docs/anamnese/interfaces).
+
+## Se não funcionar
+
+- **`show inventory` não existe:** nem todos os IOS têm o comando. Use `show version` e a inspeção física.
+- **Módulo presente fisicamente, mas ausente na lista:** registre como observação; pode estar mal encaixado ou incompatível.
+
+<Checklist
+  id="modulos-wic"
+  items={['Módulos de cada roteador identificados', 'Quantidade de portas seriais anotada']}
+/>

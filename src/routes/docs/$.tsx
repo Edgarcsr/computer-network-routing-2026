@@ -8,10 +8,9 @@ import {
   DocsPage,
   DocsTitle,
   MarkdownCopyButton,
-  ViewOptionsPopover,
 } from 'fumadocs-ui/layouts/docs/page';
 import { baseOptions } from '@/lib/layout.shared';
-import { getPageImageUrl, getPageMarkdownUrl, gitConfig } from '@/lib/shared';
+import { getPageImageUrl, getPageMarkdownUrl } from '@/lib/shared';
 import { staticFunctionMiddleware } from '@tanstack/start-static-server-functions';
 import { useFumadocsLoader } from 'fumadocs-core/source/client';
 import { Suspense, use } from 'react';
@@ -60,10 +59,6 @@ function Content({ path, markdownUrl }: { path: string; markdownUrl: string }) {
       <DocsDescription>{page.description}</DocsDescription>
       <div className="flex flex-row gap-2 items-center border-b -mt-4 pb-6">
         <MarkdownCopyButton markdownUrl={markdownUrl} />
-        <ViewOptionsPopover
-          markdownUrl={markdownUrl}
-          githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${encodeURI(path)}`}
-        />
       </div>
       <DocsBody>
         <MDX components={useMDXComponents()} />

@@ -1,31 +1,39 @@
 ---
-title: Hello World
-description: Your favourite docs framework.
-icon: Rocket
+title: InfraLab
+description: Guia de implantação do projeto N2 de Redes de Computadores I, com oito ilhas interligadas por roteadores Cisco 2800 e RIP v2.
 ---
 
-Hey there! Fumadocs is the docs framework that also works on Tanstack Start!
+## Como usar
 
-## Heading
+Cada etapa tem uma página de visão geral e uma sequência de procedimentos curtos. Siga na ordem da barra lateral, copie os comandos e marque os checklists: eles ficam salvos neste navegador.
 
-Hello World!
+| Etapa | Semana | Entrega | Ponto de controle |
+|---|---|---|---|
+| [01 · Anamnese](/docs/anamnese) | 1 | Inventário do laboratório | G1 |
+| [02 · Topologia](/docs/topologia) | 2 | Diagrama v1 e tabela de rotas previstas | G2 |
+| [03 · Simulação](/docs/simulacao) | 3 | Arquivo `.pkt` e evidências | G3 |
+| [04 · Deploy](/docs/deploy) | 4 | `running-config` e diagrama final | G4 |
+| [05 · Avaliação N2](/docs/avaliacao) | 5 | Apresentação e testes ao vivo | — |
 
-<Cards>
-  <Card title="Learn more about Tanstack Start" href="https://tanstack.com/start" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
-</Cards>
+<Callout type="warn" title="Regras que valem para tudo">
+O protocolo entre os roteadores é **RIP v2** com `no auto-summary`. Não use OSPF. Veja os [requisitos R1 a R9](/docs/referencia/requisitos).
+</Callout>
 
-### CodeBlock
+## Roteadores e redes iniciais
 
-```ts
-console.log('Hello World');
-```
+Plano inicial da equipe. A topologia e o endereçamento definitivos dependem da aprovação do professor (G2).
 
-#### Table
+| Estado | Roteador | Rede LAN |
+|---|---|---|
+| SP | R1 | 192.168.10.0/24 |
+| PR | R2 | 192.168.20.0/24 |
+| PI | R3 | 192.168.30.0/24 |
+| PB | R4 | 192.168.40.0/24 |
+| TO | R5 | 192.168.50.0/24 |
+| MG | R6 | 192.168.60.0/24 |
+| SC | R7 | 192.168.70.0/24 |
+| BA | R8 | 192.168.80.0/24 |
 
-| Head                            | Description                         |
-| ------------------------------- | ----------------------------------- |
-| `hello`                         | Hello World                         |
-| very **important**              | Hey                                 |
-| _Surprisingly_                  | Fumadocs                            |
-| very long text that looks weird | hello world hello world hello world |
+<Callout type="info" title="A levantar">
+Modelo, IOS, interfaces, módulos WIC e cabos de cada roteador ainda não são conhecidos. É o objetivo da [anamnese](/docs/anamnese).
+</Callout>

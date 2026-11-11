@@ -1,0 +1,64 @@
+---
+title: Identificar cabos DCE e DTE
+description: Descobrir quais cabos seriais são DCE e quais são DTE e quais interfaces estão ligadas a eles.
+---
+
+## O que fazer
+
+Descobrir, em cada interface serial, se o cabo conectado é **DCE** ou **DTE**, e fazer o inventário dos cabos seriais e Ethernet disponíveis.
+
+## Por que fazer
+
+Em um enlace serial, uma ponta é DCE e a outra DTE. O lado DCE fornece o clock, e a equipe dona do lado DCE é a dona do enlace.
+
+## O que você precisa
+
+- Sessão aberta no PuTTY, em modo privilegiado.
+- Acesso físico aos cabos.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Inspecione fisicamente cada cabo serial e anote a etiqueta (DCE ou DTE), se houver.
+
+</Step>
+<Step>
+
+Para uma interface com cabo conectado, consulte:
+
+```bash title="Cisco IOS · modo EXEC privilegiado"
+show controllers serial
+```
+
+</Step>
+<Step>
+
+Para cada `Interface Serial...`, procure a linha que identifica o tipo de cabo (começa com `DCE` ou `DTE`).
+
+</Step>
+<Step>
+
+Conte quantos cabos de cada tipo existem e registre no [modelo do inventário](/docs/anamnese/modelo-inventario).
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Para cada serial com cabo: `DCE` com `clock rate` definido, ou `DTE`. Interfaces sem cabo mostram indicação de cabo ausente.
+
+## Como verificar
+
+A etiqueta física do cabo bate com o que o roteador relata.
+
+## Se não funcionar
+
+- **Cabo sem etiqueta:** use a saída do `show controllers serial` para classificar.
+- **Interface sem cabo:** registre como "sem cabo".
+
+<Checklist
+  id="cabos-dce-dte"
+  items={['Cabos seriais contados por tipo (DCE/DTE)', 'Cabos Ethernet contados', 'Papel DCE/DTE registrado por interface']}
+/>

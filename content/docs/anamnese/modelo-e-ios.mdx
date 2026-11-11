@@ -1,0 +1,52 @@
+---
+title: Identificar modelo e versão do IOS
+description: Usar show version para registrar o modelo do roteador, a imagem do IOS e a memória.
+---
+
+## O que fazer
+
+Descobrir o modelo exato do roteador, a versão do IOS e o arquivo de imagem em uso.
+
+## Por que fazer
+
+O Packet Tracer simula roteadores 2811, e a configuração que funcionar nele precisa ser compatível com o que existe no laboratório. A versão do IOS também limita quais comandos estarão disponíveis.
+
+## O que você precisa
+
+- Sessão aberta no [PuTTY](/docs/anamnese/putty-serial) com prompt do roteador.
+
+## Como executar
+
+```bash title="Cisco IOS · modo EXEC"
+show version
+```
+
+**Contexto:** funciona no modo EXEC de usuário (`Router>`) e no privilegiado (`Router#`). Se o prompt terminar em `>` e o comando não for aceito, digite `enable` (pode pedir senha).
+
+**O que procurar na saída:**
+
+- A linha `Cisco IOS Software, ... Version ...`: versão do IOS.
+- `System image file is ...`: arquivo da imagem.
+- `Cisco 28xx (...) with ... bytes of memory`: modelo e memória.
+- Contagem de interfaces, por exemplo `FastEthernet interfaces` e `Serial interfaces`.
+
+A saída é longa; use a barra de espaço para paginar.
+
+## Resultado esperado
+
+Um bloco de texto com versão do IOS, modelo da linha 2800, memória e contagem de interfaces.
+
+## Como verificar
+
+Os dados coletados (modelo, versão, imagem) já cabem no [modelo do inventário](/docs/anamnese/modelo-inventario) do roteador correspondente.
+
+## Se não funcionar
+
+- **`% Invalid input`:** confira a digitação; entre no modo certo com `enable`.
+- **Prompt `rommon 1 >`:** o roteador não carregou o IOS. Avise o líder e registre nas observações.
+- **Prompt diferente de `Router`:** o roteador tem configuração antiga (hostname). Veja [configs antigas](/docs/anamnese/configs-antigas).
+
+<Checklist
+  id="modelo-e-ios"
+  items={['Modelo registrado', 'Versão do IOS registrada', 'Arquivo de imagem registrado']}
+/>

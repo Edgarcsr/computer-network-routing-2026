@@ -5,6 +5,7 @@ import { NotFound } from '@/components/not-found';
 export function getRouter() {
   return createTanStackRouter({
     routeTree,
+    basepath: import.meta.env.BASE_URL.replace(/\/$/, '') || '/',
     defaultPreload: 'intent',
     scrollRestoration: true,
     defaultNotFoundComponent: NotFound,

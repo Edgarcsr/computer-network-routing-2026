@@ -1,0 +1,98 @@
+---
+title: Configurar uma sessão Serial no PuTTY
+description: Abrir o console do roteador com PuTTY, usando a porta COM identificada.
+---
+
+## O que fazer
+
+Criar no PuTTY uma sessão do tipo **Serial** apontando para a porta COM do cabo console.
+
+## Por que fazer
+
+É o terminal que mostra o prompt do roteador e permite digitar os comandos `show` da anamnese.
+
+## O que você precisa
+
+- Cabo console conectado. O número da porta COM é descoberto no primeiro passo abaixo (detalhes em [Gerenciador](/docs/anamnese/porta-com-gerenciador) e [PowerShell](/docs/anamnese/porta-com-powershell)).
+- PuTTY instalado.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Descubra qual porta COM o Windows deu ao cabo console. Use um dos dois métodos:
+
+```powershell title="PowerShell"
+Get-CimInstance Win32_SerialPort |
+  Select-Object DeviceID, Name
+```
+
+ou abra o Gerenciador de Dispositivos e expanda **Portas (COM e LPT)**:
+
+```powershell title="Gerenciador de Dispositivos"
+devmgmt.msc
+```
+
+Anote o número (por exemplo `COM3`).
+
+</Step>
+<Step>
+
+Abra o PuTTY e, em **Connection type**, escolha **Serial**.
+
+</Step>
+<Step>
+
+Em **Serial line**, digite a porta descoberta no passo 1 (por exemplo `COM3`).
+
+</Step>
+<Step>
+
+Em **Speed**, digite `9600`.
+
+</Step>
+<Step>
+
+Em **Connection → Serial**, confira: Data bits `8`, Stop bits `1`, Parity `None`, Flow control `None`.
+
+</Step>
+<Step>
+
+Dê um nome à sessão (por exemplo `R1-SP`), clique em **Save** e depois em **Open**.
+
+</Step>
+<Step>
+
+Na janela preta, pressione `Enter` uma ou duas vezes.
+
+</Step>
+</Steps>
+
+<Callout type="info">
+9600 8N1 sem controle de fluxo é o padrão usual do console Cisco. Se o roteador foi configurado por outra turma, a velocidade pode ser diferente e precisa ser levantada.
+</Callout>
+
+## Resultado esperado
+
+Aparece um prompt como `Router>`, `Router#`, ou um pedido de senha (`Password:` / `Username:`).
+
+## Como verificar
+
+Digite `?` e pressione Enter: o roteador deve listar comandos.
+
+## Se não funcionar
+
+- **Tela em branco:** pressione Enter novamente; confira a porta COM e o cabo.
+- **Caracteres estranhos:** velocidade (Speed) errada. Tente outra.
+- **`Unable to open connection`:** outra janela ou programa está usando a porta. Feche-o.
+- **Pede senha desconhecida:** registre "senha desconhecida" no [modelo do inventário](/docs/anamnese/modelo-inventario) e leve ao líder. Veja também [configs antigas](/docs/anamnese/configs-antigas).
+
+<Checklist
+  id="putty-serial"
+  items={[
+    'Sessão Serial criada com a COM correta',
+    'Prompt do roteador recebido',
+    'Sessão salva com o nome do roteador',
+  ]}
+/>

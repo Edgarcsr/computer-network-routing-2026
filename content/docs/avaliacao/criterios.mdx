@@ -1,0 +1,38 @@
+---
+title: Critérios de avaliação
+description: Como a nota N2 é composta e as regras de corte.
+---
+
+A nota da equipe vai de 0 a 10 e soma os cinco critérios; a arguição pode ajustar a nota individual.
+
+| Critério | Pontos | Nota cheia quando |
+|---|---|---|
+| Documentação e diagrama | 2,0 | Diagrama completo, rotas destacadas, saltos com IP, configs entregues |
+| Simulação no Packet Tracer | 1,5 | G3 aprovado no prazo, failover demonstrado na simulação |
+| Rota primária | 2,5 | `traceroute` igual ao diagrama, passando por SP até a internet |
+| Failover | 2,5 | Convergência dentro da janela e traceroute igual à contingência |
+| Arguição técnica | 1,5 | Qualquer integrante explica a escolha do RIP e a configuração |
+| **Total** | **10,0** | |
+
+## Regras de corte
+
+<Callout type="error">
+- Rota diferente da prevista no diagrama vale no máximo metade dos pontos do critério, mesmo que funcione.
+- Sem a rota primária funcionando, o teste de failover não é feito e vale zero.
+- Integrante que não responder na arguição pode ter a nota individual reduzida em até 1,5 ponto.
+</Callout>
+
+## Entregáveis
+
+| Entregável | Responsável | Semana |
+|---|---|---|
+| Inventário do laboratório | Comitê | 1 |
+| Topologia do backbone e plano de IPs | Comitê | 2 |
+| Rotas previstas da ilha | Equipe | 2 |
+| Simulação completa (`.pkt`) | Comitê + equipes | 3 |
+| Evidências da simulação (PDF com prints) | Equipe | 3 |
+| `running-config` do roteador (`.txt`) | Equipe | 4 |
+| Diagrama final com as duas rotas destacadas | Equipe | 4 |
+| Apresentação e testes ao vivo | Equipe | 5 |
+
+No diagrama final, a primária e a contingência aparecem em cores diferentes, com cada salto identificado pelo IP de entrada que o traceroute vai mostrar.

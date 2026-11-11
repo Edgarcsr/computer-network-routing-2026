@@ -1,0 +1,52 @@
+---
+title: Verificar o clock rate
+description: Consultar o clock rate das interfaces seriais lado DCE, apenas para levantamento.
+---
+
+## O que fazer
+
+Verificar se as interfaces seriais lado DCE já têm um clock rate definido e anotar o valor.
+
+## Por que fazer
+
+Sem clock rate no lado DCE, o enlace serial não sobe. Na anamnese apenas **levantamos**; a configuração definitiva só acontece no deploy.
+
+## O que você precisa
+
+- Sessão aberta no PuTTY, em modo privilegiado.
+
+## Como executar
+
+```bash title="Cisco IOS · modo EXEC privilegiado"
+show controllers serial
+```
+
+Procure, em cada interface com cabo DCE, a indicação `clock rate` com o valor.
+
+Para ver se há um valor vindo da configuração antiga:
+
+```bash title="Cisco IOS"
+show running-config
+```
+
+## Resultado esperado
+
+Interfaces DCE mostram `clock rate`. Interfaces DTE não definem clock.
+
+<Callout type="warn" title="Não configurar agora">
+Esta etapa é só levantamento. Não apresentamos configuração definitiva antes da aprovação da topologia (G2).
+</Callout>
+
+## Como verificar
+
+O valor anotado no inventário é o mesmo que aparece no roteador.
+
+## Se não funcionar
+
+- **Interface sem clock rate:** normal em roteador novo ou limpo; registre "sem clock rate".
+- **Valores diferentes entre os dois lados:** registre e leve ao Comitê.
+
+<Checklist
+  id="clock-rate"
+  items={['Clock rate das seriais DCE anotado', 'Nenhuma configuração alterada']}
+/>

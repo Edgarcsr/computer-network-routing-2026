@@ -1,0 +1,32 @@
+---
+title: Visão geral da etapa
+description: Semana 1 · descobrir e documentar o que existe no laboratório antes de desenhar qualquer topologia.
+---
+
+## Por que esta etapa vem primeiro
+
+O quadro de interfaces, cabos e módulos (WIC) de cada roteador **não está fechado**: ele é o primeiro produto do projeto. A topologia só pode ser desenhada depois desse levantamento, porque o número de interfaces livres em cada roteador limita quantos vizinhos ele pode ter.
+
+<Callout type="warn" title="Regra de ouro do projeto">
+Cada ilha precisa de, no mínimo, dois vizinhos no backbone. Um roteador com um único enlace não tem como ter dois caminhos até SP.
+</Callout>
+
+## O que levantar
+
+| Por roteador | Por ilha |
+|---|---|
+| Modelo e versão do IOS | Número de estações (4 ou 6) |
+| Interfaces e módulos (WIC) livres | Hipervisor instalado |
+| Cabos disponíveis (serial DCE/DTE, Ethernet) | Imagem Ubuntu Desktop disponível |
+| Acesso por console e senhas | Switch da ilha |
+
+## Ordem sugerida
+
+1. **Acesso:** conectar o cabo console, descobrir a porta COM e abrir a sessão no PuTTY.
+2. **Roteador:** modelo, interfaces, módulos, cabos, clock rate e configuração antiga.
+3. **Ilha:** estações, hipervisor e imagens Ubuntu.
+4. **Fechamento:** consolidar tudo no [modelo do inventário](/docs/anamnese/modelo-inventario) e entregar para o G1.
+
+<Callout type="warn" title="A levantar">
+Nenhum dado do laboratório está preenchido ainda. Tudo o que aparece como "a levantar" no inventário precisa ser descoberto presencialmente.
+</Callout>

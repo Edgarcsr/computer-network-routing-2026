@@ -1,0 +1,55 @@
+---
+title: Consultar as interfaces disponíveis
+description: Listar as interfaces físicas do roteador e seu estado com show ip interface brief.
+---
+
+## O que fazer
+
+Listar todas as interfaces que o roteador reconhece e anotar nome e estado de cada uma.
+
+## Por que fazer
+
+O número de interfaces livres limita quantos vizinhos o roteador pode ter. Sem esta lista, não dá para desenhar a topologia.
+
+## O que você precisa
+
+- Sessão aberta no PuTTY, em modo privilegiado (`Router#`).
+
+## Como executar
+
+```bash title="Cisco IOS · modo EXEC privilegiado"
+show ip interface brief
+```
+
+**O que faz:** mostra uma linha por interface, com endereço IP, status e protocolo.
+
+**Como ler:**
+
+| Coluna | Significado |
+|---|---|
+| `Interface` | Nome, por exemplo `FastEthernet0/0`, `Serial0/0/0` |
+| `IP-Address` | `unassigned` se ainda não há IP |
+| `Status` | `administratively down` (desligada por comando), `down` (sem sinal) ou `up` |
+| `Protocol` | `up` quando a camada de enlace funciona |
+
+## Resultado esperado
+
+Uma lista com as interfaces FastEthernet e, se houver módulo instalado, as Serial. Não assuma que todos os roteadores terão as mesmas interfaces.
+
+<Callout type="warn" title="A levantar">
+Quais e quantas interfaces cada um dos 8 roteadores possui. Registre cada nome exatamente como aparece.
+</Callout>
+
+## Como verificar
+
+Compare com a contagem de interfaces do `show version` ([procedimento anterior](/docs/anamnese/modelo-e-ios)). Os totais devem bater.
+
+## Se não funcionar
+
+- **Interface esperada não aparece:** o módulo pode não estar instalado ou reconhecido. Veja [módulos WIC](/docs/anamnese/modulos-wic).
+- **Todas `administratively down`:** é normal em roteador sem configuração.
+
+<Checklist
+  id="interfaces"
+  items={['Todas as interfaces anotadas', 'Total conferido com o show version']}
+/>

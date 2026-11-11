@@ -1,0 +1,67 @@
+---
+title: Conectar ao roteador pelo cabo console
+description: Ligar fisicamente o computador à porta Console do roteador Cisco 2800.
+---
+
+## O que fazer
+
+Ligar um computador com Windows à porta **Console** do roteador usando o cabo console (e um adaptador USB-serial, se o computador não tiver porta serial).
+
+## Por que fazer
+
+O console é o acesso de gerenciamento "fora da rede". É a única forma garantida de entrar em um roteador que ainda não tem IP, não tem configuração ou tem senha desconhecida, que é exatamente o caso na anamnese.
+
+## O que você precisa
+
+- Cabo console do roteador.
+- Adaptador USB-serial, se o computador não tiver porta serial. Instale o driver do fabricante se o Windows não reconhecer.
+- Computador com Windows e PuTTY.
+- Roteador ligado.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Localize no painel traseiro do roteador a porta rotulada **CONSOLE** (não confunda com a porta **AUX**).
+
+</Step>
+<Step>
+
+Conecte a ponta RJ-45 do cabo na porta CONSOLE.
+
+</Step>
+<Step>
+
+Conecte a outra ponta no computador, direto na serial ou pelo adaptador USB-serial.
+
+</Step>
+<Step>
+
+Anote em qual roteador (R1 a R8) e em qual computador você conectou. O número da porta COM será descoberto no próximo procedimento.
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+O cabo fica firme nas duas pontas. Ainda não aparece nada na tela: isso só acontece depois de abrir a sessão no [PuTTY](/docs/anamnese/putty-serial).
+
+## Como verificar
+
+Com o adaptador USB conectado, o Windows deve criar uma nova porta serial. Veja como encontrá-la em [Gerenciador de Dispositivos](/docs/anamnese/porta-com-gerenciador).
+
+## Se não funcionar
+
+- **Adaptador sem porta COM nova:** driver ausente. Instale o driver do chip do adaptador.
+- **Cabo trocado:** tente a porta AUX só se o console estiver realmente inacessível, e informe o líder.
+- **Mais de um roteador:** use um cabo etiquetado por roteador para não confundir R1 a R8.
+
+<Checklist
+  id="conectar-console"
+  items={[
+    'Porta CONSOLE do roteador localizada',
+    'Cabo conectado ao roteador e ao computador',
+    'Roteador (R1–R8) anotado',
+  ]}
+/>

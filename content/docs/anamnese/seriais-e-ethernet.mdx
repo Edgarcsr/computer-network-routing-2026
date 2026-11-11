@@ -1,0 +1,53 @@
+---
+title: Verificar interfaces seriais e Ethernet
+description: Separar quais interfaces servem para o backbone e quais ficam para a LAN da ilha.
+---
+
+## O que fazer
+
+Classificar as interfaces encontradas em FastEthernet e Serial, e marcar quais estão livres para o backbone.
+
+## Por que fazer
+
+Cada roteador usa **uma FastEthernet** para o switch da ilha. O restante das interfaces (serial ou Ethernet) forma o backbone e precisa ter pelo menos **dois enlaces**.
+
+## O que você precisa
+
+- Lista de interfaces ([procedimento anterior](/docs/anamnese/interfaces)).
+
+## Como executar
+
+```bash title="Cisco IOS · modo EXEC privilegiado"
+show ip interface brief
+show controllers serial
+```
+
+**O que faz:** o primeiro mostra todas as interfaces; o segundo mostra detalhes do hardware de cada serial, incluindo o tipo de cabo conectado.
+
+Para cada interface, registre no [modelo do inventário](/docs/anamnese/modelo-inventario): nome, tipo, se está com cabo, e observações.
+
+<Callout type="info">
+Nem todos os roteadores terão as mesmas interfaces ou os mesmos comandos disponíveis. Registre o que cada um tem, sem generalizar.
+</Callout>
+
+## Resultado esperado
+
+Para cada roteador, uma lista de interfaces classificadas, com pelo menos uma FastEthernet reservada para a LAN.
+
+## Como verificar
+
+Conte as interfaces livres para o backbone: um roteador com menos de duas não consegue cumprir a regra de ouro.
+
+<Callout type="error" title="Sinal de alerta">
+Se algum roteador tiver menos de duas interfaces livres para o backbone, avise o líder imediatamente: isso muda o desenho da topologia.
+</Callout>
+
+## Se não funcionar
+
+- **`show controllers serial` sem saída:** o roteador não tem interface serial.
+- **Interface `down/down` com cabo conectado:** pode faltar o outro lado ou o clock rate. Veja [clock rate](/docs/anamnese/clock-rate).
+
+<Checklist
+  id="seriais-e-ethernet"
+  items={['Interfaces classificadas por tipo', 'Interfaces livres para o backbone contadas']}
+/>

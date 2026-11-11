@@ -1,0 +1,65 @@
+---
+title: Identificar a porta COM no Gerenciador de Dispositivos
+description: Descobrir qual COMx o Windows atribuiu ao cabo console, usando devmgmt.msc.
+---
+
+## O que fazer
+
+Descobrir o número da porta COM (COM3, COM4…) que o Windows atribuiu ao cabo console.
+
+## Por que fazer
+
+O PuTTY precisa saber qual porta serial usar. O número muda de computador para computador, e até de uma porta USB para outra.
+
+## O que você precisa
+
+- Cabo console conectado ([procedimento anterior](/docs/anamnese/conectar-console)).
+- Windows.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Abra o Executar (`Win + R`) ou o PowerShell e rode:
+
+```powershell title="Abrir o Gerenciador de Dispositivos"
+devmgmt.msc
+```
+
+</Step>
+<Step>
+
+Expanda **Portas (COM e LPT)**.
+
+</Step>
+<Step>
+
+Procure uma entrada como **USB Serial Port (COM3)**. O número entre parênteses é a porta.
+
+</Step>
+<Step>
+
+Para confirmar qual entrada é o seu cabo: desconecte o adaptador e veja qual item some; reconecte e veja qual volta.
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Uma entrada de porta serial com um número de COM, por exemplo `COM3`.
+
+## Como verificar
+
+A entrada some quando o adaptador é desconectado e reaparece quando é reconectado.
+
+## Se não funcionar
+
+- **Item com ícone de aviso em "Outros dispositivos":** falta o driver do adaptador.
+- **Seção "Portas" ausente:** nenhum dispositivo serial foi detectado. Teste outra porta USB ou outro cabo.
+- **Prefere linha de comando?** Veja [Identificar portas seriais com PowerShell](/docs/anamnese/porta-com-powershell).
+
+<Checklist
+  id="porta-com-gerenciador"
+  items={['Gerenciador de Dispositivos aberto', 'Porta COM identificada e anotada']}
+/>
