@@ -1,0 +1,73 @@
+---
+title: Listar os vizinhos que cabem
+description: Semana 2 · transformar o inventário de interfaces em um limite de enlaces por roteador.
+---
+
+## O que fazer
+
+Descobrir, em cada roteador, quantos vizinhos de backbone as portas livres aguentam.
+
+## Por que fazer
+
+Cada enlace gasta uma porta em cada ponta. A regra de dois caminhos até SP não cabe num roteador que só tem uma porta sobrando. Esse limite veio da [anamnese](/docs/anamnese/seriais-e-ethernet).
+
+## O que você precisa
+
+- Inventário do G1, com os nomes de interface copiados do `show ip interface brief`.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Reserve uma Ethernet de cada roteador para o switch da ilha. Essa porta não entra no backbone.
+
+</Step>
+<Step>
+
+Conte o restante: seriais e Ethernets livres. Cada uma aceita, no máximo, um vizinho.
+
+</Step>
+<Step>
+
+Se algum roteador ficou com menos de duas portas de backbone, pare e avise o Comitê antes de desenhar. SP também entra na conta das portas, mesmo sendo a exceção do R3.
+
+</Step>
+<Step>
+
+Marque o tipo de cada porta livre. Serial exige par DCE/DTE. Ethernet exige porta Ethernet do outro lado.
+
+</Step>
+<Step>
+
+Monte a tabela do Comitê. A linha abaixo é formato, não dado de laboratório: os nomes saem do inventário.
+
+| Roteador | Porta da LAN | Portas livres | Tipo |
+|---|---|---|---|
+| R2 · PR | FastEthernet0/0 | Serial0/0/0, Serial0/0/1 | serial |
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Oito linhas, uma por roteador, com a contagem de portas de backbone.
+
+## Como verificar
+
+Conte o total de portas que o desenho usa. Cada enlace consome duas. Total ímpar significa porta contada duas vezes ou enlace com uma ponta só.
+
+## Se não funcionar
+
+- **Menos de duas portas livres:** o desenho muda, ou o módulo WIC muda, com o professor. Não "empreste" a Ethernet da LAN para o backbone sem registrar que a ilha ficou sem porta de estações.
+- **Nomes diferentes do `show ip interface brief`:** vale o que o roteador imprimiu, não o rótulo do painel.
+
+<Checklist
+  id="topologia-vizinhos"
+  items={[
+    'Uma Ethernet reservada para a LAN de cada ilha',
+    'Portas de backbone contadas nos 8 roteadores',
+    'Roteador com menos de duas portas avisado ao Comitê',
+    'Soma das portas usadas é par',
+  ]}
+/>

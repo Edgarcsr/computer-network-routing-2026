@@ -1,0 +1,101 @@
+---
+title: Resolver empates de métrica
+description: Semana 2 · achar caminhos de mesmo custo e quebrar o empate antes do G2.
+---
+
+## O que fazer
+
+Achar ilhas em que dois caminhos até SP têm a mesma métrica e desfazer o empate, ou documentar o balanceamento como o R4 permite.
+
+## Por que fazer
+
+Com métricas iguais o IOS reparte o tráfego entre até 4 caminhos. O `traceroute` deixa de seguir uma linha só do diagrama, e a rota "diferente da prevista" perde metade dos pontos mesmo quando a rede funciona.
+
+## O que você precisa
+
+- Tabela de caminhos, com a conta de [saltos](/docs/topologia/saltos).
+
+## O anel de oito
+
+```text
+        SP
+       /  \
+      A    H
+      |    |
+      B    G
+      |    |
+      C    F
+       \  /
+        E
+```
+
+As letras não são as ilhas do laboratório. E está a 4 enlaces por A–B–C e a 4 por H–G–F. Num anel simples, a ilha oposta a SP empata. As ilhas ao lado de SP (A e H) ficam com métrica 1 de um lado e 7 do outro: aí não há empate.
+
+Uma corda SP–E faz a primária de E cair para 1. Os dois arcos de 4 continuam iguais entre si. Com a corda no ar, o `traceroute` usa a corda e parece estável. Quando o professor desliga a corda, que é o único enlace da primária, a contingência empata e o `traceroute` alterna. Por isso o empate se confere também depois do corte, não só com a rede inteira no ar.
+
+Qualquer enlace novo muda a métrica de outras ilhas. A tabela inteira se refaz.
+
+## offset-list
+
+Se não houver porta livre para uma corda, o R4 aceita `offset-list` documentado. No roteador da ilha que empata, some 1 à métrica recebida pela interface do caminho que deve perder:
+
+```bash title="Cisco IOS · exemplo"
+configure terminal
+router rip
+ offset-list 0 in 1 Serial0/0/0
+end
+```
+
+O `0` não é uma access-list a criar. Nesse comando, `0` significa todas as rotas. `in` altera o que este roteador aprende na interface, que é a tabela que o `traceroute` da ilha vai seguir. `out` altera o anúncio para o vizinho e a sua própria tabela não muda.
+
+O diagrama passa a mostrar a métrica já somada. O acréscimo fica pequeno, em geral 1, e a contingência continua menor que 16. Métrica 16 é inalcançável: o RIP descarta.
+
+`Serial0/0/0` é exemplo. A interface é a do caminho que deve ficar pior, no nome que a anamnese registrou.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Para cada ilha, compare a métrica da primária com a da contingência. Iguais: empate.
+
+</Step>
+<Step>
+
+Repita a comparação no cenário em que um enlace da primária já foi removido. Empate só na contingência também quebra o failover.
+
+</Step>
+<Step>
+
+Prefira um enlace a mais, se a [tabela de portas](/docs/topologia/vizinhos) tiver porta nos dois lados. Senão, registre o `offset-list`: roteador, interface, `in` ou `out`, valor, métrica resultante.
+
+</Step>
+<Step>
+
+Refaça a tabela de todas as ilhas. Entregue ao G2 o diagrama e a tabela juntos.
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Nenhuma ilha com duas métricas iguais, nem no caminho normal nem depois de cada corte da primária. Se o Comitê mantiver um empate, o diagrama descreve o balanceamento e o que o `traceroute` vai fazer, como o R4 pede.
+
+## Como verificar
+
+A coluna de métrica da primária é menor que a da contingência nas sete ilhas. Todo `offset-list` tem dono, interface e valor escritos ao lado do desenho.
+
+## Se não funcionar
+
+- **A corda consertou uma ilha e empatou outra:** esperado. Ajuste de novo e reconte todas, não só a ilha que você estava olhando.
+- **`offset-list` aplicado e a tabela local não mudou:** o comando foi `out`, ou foi na interface do outro caminho.
+
+<Checklist
+  id="topologia-empates"
+  items={[
+    'Empate procurado nas 7 ilhas',
+    'Empate procurado também depois do corte da primária',
+    'Corda ou offset documentado',
+    'Tabela refeita para o G2',
+  ]}
+/>

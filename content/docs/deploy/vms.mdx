@@ -1,0 +1,109 @@
+---
+title: Configurar as VMs Ubuntu
+description: Semana 4 · duas VMs por ilha, em bridge na Ethernet, com IP fixo, gateway e DNS.
+---
+
+## O que fazer
+
+Colocar no mínimo duas VMs Ubuntu Desktop na LAN da ilha, com endereço fixo.
+
+## Por que fazer
+
+O R7 pede essas VMs como origem do `ping` e do `traceroute`. VM em NAT, ou presa no Wi-Fi, não está na rede da ilha: o sintoma clássico no VirtualBox é o endereço `10.0.2.15`.
+
+## O que você precisa
+
+- Hipervisor e imagem levantados na anamnese.
+- LAN do roteador `up/up` e gateway `.1`.
+- DNS indicado pelo professor. Sem um DNS interno, `8.8.8.8` resolve o site do teste.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Modo bridge na Ethernet cabeada do computador, não no Wi-Fi e não em NAT.
+
+- **VirtualBox:** Adapter 1, Bridged Adapter, o adaptador Ethernet.
+- **VMware:** Bridged, escolhendo a Ethernet. "Automatic" pode pegar o Wi-Fi.
+- **Hyper-V:** switch externo já ligado à Ethernet. Criar outro switch externo derruba a rede do Windows por um instante: combine com o líder.
+
+</Step>
+<Step>
+
+Dentro da VM, veja o nome da interface:
+
+```bash title="Ubuntu"
+ip -br link
+```
+
+</Step>
+<Step>
+
+Se a VM usa netplan, edite o yaml que já existe em `/etc/netplan/` em vez de criar um segundo que brigue com o primeiro. Espaços, sem tab. Exemplo da ilha PR no plano inicial, VM `.10`:
+
+```yaml title="Ubuntu · /etc/netplan/01-ilha.yaml"
+network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: false
+      addresses:
+        - 192.168.20.10/24
+      routes:
+        - to: default
+          via: 192.168.20.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+```
+
+```bash title="Ubuntu"
+sudo chmod 600 /etc/netplan/01-ilha.yaml
+sudo netplan apply
+```
+
+Versão antiga que não aceita `routes` usa `gateway4: 192.168.20.1` no lugar desse bloco. Se não houver netplan e existir `/etc/network/interfaces`, o endereço fixo vai nesse arquivo, com `netmask 255.255.255.0`.
+
+</Step>
+<Step>
+
+A segunda VM usa outro host, por exemplo `.11`, o mesmo gateway e o mesmo DNS. Instale o traceroute depois que o `ping` ao gateway responder:
+
+```bash title="Ubuntu"
+sudo apt update && sudo apt install -y traceroute
+```
+
+</Step>
+</Steps>
+
+`.1` é o roteador. Não use `.0` nem `.255`.
+
+## Resultado esperado
+
+`ip -4 addr` mostra o IP da LAN. `ping` ao gateway responde. `traceroute` existe (`traceroute --version`).
+
+## Como verificar
+
+```bash title="Ubuntu"
+ping -c 3 192.168.20.1
+ip route
+```
+
+A rota default aponta para o gateway da ilha.
+
+## Se não funcionar
+
+- **Endereço `10.0.2.15`:** continua em NAT. Volte ao bridge e só então ao IP fixo.
+- **`netplan apply` recusa o arquivo:** indentação ou arquivo legível por todos. `chmod 600` e espaços de dois em dois.
+- **Gateway não responde:** a Ethernet da VM não é a cabeada, ou a LAN do roteador não está `up/up`.
+
+<Checklist
+  id="deploy-vms"
+  items={[
+    'Duas VMs em bridge na Ethernet',
+    'IP fixo, gateway e DNS',
+    'Ping no gateway',
+    'Pacote traceroute instalado',
+  ]}
+/>

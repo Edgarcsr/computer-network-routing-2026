@@ -1,4 +1,15 @@
 {
   "title": "02 · Topologia",
-  "defaultOpen": true
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "---Desenho---",
+    "vizinhos",
+    "enlaces",
+    "enderecamento",
+    "---Rotas previstas---",
+    "caminhos",
+    "saltos",
+    "empates"
+  ]
 }

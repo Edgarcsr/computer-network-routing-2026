@@ -1,0 +1,114 @@
+---
+title: Recuperar o acesso ao roteador
+description: Procedimento usual da linha Cisco 2800 quando a senha de enable é desconhecida.
+---
+
+## O que fazer
+
+Entrar no roteador quando a senha não é conhecida, guardar a configuração antiga em texto e devolver o registrador de boot ao valor normal.
+
+## Por que fazer
+
+Sem o modo privilegiado não há `show running-config` nem, mais tarde, RIP. O procedimento abaixo é o da família 2800 (2801, 2811, 2821, 2851). Se o banner de boot mostrar outro modelo, pare e chame o professor.
+
+## O que você precisa
+
+- Cabo console e sessão no [PuTTY](/docs/anamnese/putty-serial).
+- Professor e líder presentes. Um roteador de cada vez.
+- Log da sessão ligado (**Session → Logging → All session output**).
+
+## Como executar
+
+<Steps>
+<Step>
+
+Desligue e ligue só esse roteador. Nos primeiros 60 segundos de boot, envie BREAK: no PuTTY, **Special Command → Break**. O prompt deve ser `rommon 1 >`.
+
+</Step>
+<Step>
+
+Ignore a configuração salva neste boot e reinicie:
+
+```bash title="ROMMON"
+confreg 0x2142
+reset
+```
+
+</Step>
+<Step>
+
+Na pergunta da configuração inicial, responda `no`. Se o roteador ainda estiver com cabo de rede na ilha, solte esses cabos e deixe só o console: a configuração antiga pode subir interface e anunciar rota no laboratório. Entre no modo privilegiado e traga a configuração para a memória, com o log do PuTTY gravando. `copy`, `write erase` e `reload` pedem confirmação: Enter aceita.
+
+```bash title="Cisco IOS"
+enable
+copy startup-config running-config
+show running-config
+```
+
+O arquivo de log é o backup. Não digite `disable` e não feche o PuTTY: a senha antiga volta a valer num login novo.
+
+</Step>
+<Step>
+
+Com o Comitê, escolha um dos fins. Para ficar com a configuração antiga e só trocar a senha:
+
+```bash title="Cisco IOS"
+configure terminal
+enable secret <senha-combinada>
+config-register 0x2102
+end
+copy running-config startup-config
+```
+
+Para entregar o roteador limpo depois do backup em texto:
+
+```bash title="Cisco IOS"
+configure terminal
+config-register 0x2102
+end
+write erase
+```
+
+</Step>
+<Step>
+
+Confira o registrador e só então recarregue:
+
+```bash title="Cisco IOS"
+show version
+reload
+```
+
+Na saída, `Configuration register is 0x2102`.
+</Step>
+</Steps>
+
+<Callout type="error" title="0x2142 não pode sobrar">
+Com o registrador em `0x2142` o roteador ignora o `startup-config` em todo boot. A configuração da semana 4 sumiria no primeiro desligamento. `config-register 0x2102` fica feito e conferido no `show version` antes de encerrar.
+</Callout>
+
+O `config-register` não mora dentro do arquivo que o `write erase` apaga. Apagar a configuração não devolve o registrador para `0x2102` sozinho.
+
+## Resultado esperado
+
+Backup `.txt` da configuração antiga, senha conhecida ou roteador limpo, e boot seguinte carregando o que foi salvo.
+
+## Como verificar
+
+Depois do `reload`, o prompt aceita a senha nova ou sobe limpo (`Router>`), e `show version` mostra `0x2102`.
+
+## Se não funcionar
+
+- **BREAK ignorado:** outro adaptador USB-serial. Não invente outro valor de `confreg`.
+- **Prompt diferente de `rommon`:** pare. Pode ser IOS ausente (`rommon` no meio da anamnese, sem ter pedido BREAK) ou outro fabricante de boot. Veja [modelo e IOS](/docs/anamnese/modelo-e-ios).
+- **`copy startup-config` falha porque não há startup:** o roteador já estava vazio. Acerte só o registrador.
+
+<Checklist
+  id="recuperar-senha"
+  items={[
+    'Autorização do professor',
+    'Backup em txt antes de apagar',
+    'Registrador conferido em 0x2102',
+    'Login testado depois do reload',
+  ]}
+/>

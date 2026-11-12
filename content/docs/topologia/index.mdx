@@ -9,19 +9,19 @@ description: Semana 2 · desenhar o backbone e prever as rotas de cada ilha.
 A topologia só pode ser desenhada depois do G1. O número de interfaces livres em cada roteador limita quantos vizinhos ele pode ter.
 </Callout>
 
-## Ferramenta
+## O que esta etapa produz
 
-Cadastre os enlaces na tabela de rotas previstas. O InfraLab calcula, a partir deles, os saltos até SP, a rota primária, a de contingência e os empates.
+Um diagrama só do backbone, feito pelo Comitê, e a tabela de rotas da sua ilha. A conta dos saltos é manual: o site não calcula caminho.
 
-## Procedimentos previstos
+Nenhum enlace das páginas seguintes é a topologia do laboratório. Números como `10.1.2.1` são exemplo de formato. Vale o que o professor aprovar no G2.
 
-1. Identificar os vizinhos de cada roteador.
-2. Definir os enlaces físicos (cada ilha com no mínimo dois vizinhos).
-3. Planejar o endereçamento dos enlaces e das LANs.
-4. Calcular os caminhos primário e de contingência.
-5. Contar os saltos até SP.
-6. Identificar possíveis empates de métrica.
+## Ordem
 
-<Callout type="info">
-Os procedimentos detalhados desta etapa serão escritos depois do levantamento. Veja o [plano de endereçamento sugerido](/docs/referencia/requisitos).
-</Callout>
+1. [Vizinhos que cabem](/docs/topologia/vizinhos), a partir das portas livres.
+2. [Enlaces](/docs/topologia/enlaces), com dois caminhos até SP sem enlace em comum.
+3. [Endereçamento](/docs/topologia/enderecamento) das LANs e dos `/30`.
+4. [Caminhos](/docs/topologia/caminhos) primário e de contingência, inclusive depois de cada corte.
+5. [Saltos](/docs/topologia/saltos) até SP e os IPs que o traceroute vai mostrar.
+6. [Empates](/docs/topologia/empates) de métrica, resolvidos antes de entregar.
+
+O plano de endereços sugerido continua nos [requisitos](/docs/referencia/requisitos). Os comandos que vão usar esses endereços estão no [modelo de RIP](/docs/referencia/modelo-rip).

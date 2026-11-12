@@ -1,4 +1,17 @@
 {
   "title": "03 · Simulação",
-  "defaultOpen": true
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "---Montagem---",
+    "montar-pkt",
+    "interfaces-pkt",
+    "rip-v2",
+    "rota-padrao",
+    "---Validação---",
+    "verificar-rotas",
+    "traceroute-pkt",
+    "falha",
+    "convergencia"
+  ]
 }

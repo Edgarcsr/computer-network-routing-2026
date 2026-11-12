@@ -1,4 +1,18 @@
 {
   "title": "04 · Deploy",
-  "defaultOpen": true
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "---Roteadores---",
+    "cabeamento",
+    "interfaces",
+    "rip-v2",
+    "rota-padrao",
+    "---Ilha e borda---",
+    "firewall",
+    "vms",
+    "---Fechamento---",
+    "testes",
+    "salvar"
+  ]
 }

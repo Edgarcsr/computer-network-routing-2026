@@ -1,0 +1,75 @@
+---
+title: Montar a topologia no Packet Tracer
+description: Semana 3 · um único arquivo .pkt com os oito roteadores, o firewall e as estações.
+---
+
+## O que fazer
+
+Montar no Cisco Packet Tracer o diagrama aprovado no G2, num arquivo só.
+
+## Por que fazer
+
+O R8 pede a rede inteira simulada, com os mesmos endereços e as mesmas rotas, antes de configurar o laboratório. O 2811 é o modelo que o Packet Tracer tem para este projeto; os módulos seguem o inventário, não um palpite.
+
+## O que você precisa
+
+- Diagrama e plano de IPs do G2.
+- Packet Tracer instalado.
+- Inventário de portas seriais de cada roteador.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Crie um arquivo novo e salve com o nome combinado pelo Comitê. Não espalhe um `.pkt` por ilha.
+
+</Step>
+<Step>
+
+Coloque oito roteadores **2811** e renomeie com a sigla da ilha (SP, PR, …). Desligue cada um na aba Physical, encaixe a quantidade de WIC-2T que reproduz as seriais do inventário e ligue de novo. Roteador sem serial no inventário não ganha WIC.
+
+</Step>
+<Step>
+
+Ligue os enlaces do diagrama. No cabo Serial do Packet Tracer, o primeiro roteador clicado fica com o lado DCE. Confirme depois com `show controllers serial`. Ethernet liga Ethernet, serial liga serial.
+
+</Step>
+<Step>
+
+Em cada ilha, um switch, a Ethernet da LAN do roteador nesse switch, e dois PCs no switch. Eles ocupam o lugar das VMs do R7.
+
+</Step>
+<Step>
+
+Acrescente um roteador chamado `FW` e um servidor chamado `Internet`. `FW` representa o firewall Linux: não vai falar RIP. O servidor fica do outro lado, na rede fictícia `203.0.113.0/24`, que só existe neste arquivo para o `tracert` ter um destino além do firewall.
+
+</Step>
+</Steps>
+
+<Callout type="info">
+`203.0.113.10` não é um site real. Na avaliação o destino é o site que o professor escolher. Aqui ele só segura o fim do caminho.
+</Callout>
+
+## Resultado esperado
+
+Um `.pkt` com oito 2811, os enlaces do diagrama, dois PCs por ilha, `FW` e o servidor.
+
+## Como verificar
+
+Conte no arquivo: 8 roteadores de ilha, cada enlace do papel presente uma vez, dois PCs por switch, `FW` ligado a SP e ao servidor.
+
+## Se não funcionar
+
+- **A porta serial não existe no 2811:** o roteador estava ligado quando o WIC foi colocado, ou o WIC não foi para um slot vazio. Desligue, encaixe, ligue.
+- **O desenho pede mais seriais do que o inventário:** o `.pkt` está à frente do laboratório. Volte ao G2.
+
+<Checklist
+  id="simulacao-montar-pkt"
+  items={[
+    'Arquivo único do Comitê',
+    'Oito 2811 com os módulos do inventário',
+    'Enlaces iguais aos do diagrama',
+    'Dois PCs por ilha, mais FW e o servidor',
+  ]}
+/>

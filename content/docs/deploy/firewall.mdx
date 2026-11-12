@@ -1,0 +1,88 @@
+---
+title: Integrar o firewall Linux
+description: Semana 4 · equipe SP · encaminhamento, rotas de retorno e NAT.
+---
+
+## O que fazer
+
+Fazer o firewall encaminhar, devolver o tráfego das ilhas para SP e aplicar NAT na saída para a internet.
+
+## Por que fazer
+
+O R5 fecha o teste: a resposta do site precisa achar a ilha, e o destino público precisa ver um endereço traduzido. O levantamento do que já existe está na [anamnese](/docs/anamnese/firewall).
+
+## O que você precisa
+
+- Acesso administrativo ao firewall, com o professor.
+- Ficha da anamnese: qual interface é SP, qual é a internet, se já há NAT.
+- SP já com `10.0.0.1` no plano sugerido, firewall com `10.0.0.2`.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Ligue o encaminhamento e deixe gravado:
+
+```bash title="Linux"
+sudo sysctl -w net.ipv4.ip_forward=1
+echo 'net.ipv4.ip_forward=1' | sudo tee /etc/sysctl.d/99-infralab.conf
+sudo sysctl -p /etc/sysctl.d/99-infralab.conf
+```
+
+</Step>
+<Step>
+
+Rotas de volta para SP. O `/16` cobre as duas propostas de LAN; o `/8` cobre os enlaces. A rota conectada do `/30` continua mais específica, então o cabo com SP não passa a apontar para si mesmo:
+
+```bash title="Linux"
+sudo ip route replace 192.168.0.0/16 via 10.0.0.1
+sudo ip route replace 10.0.0.0/8 via 10.0.0.1
+```
+
+</Step>
+<Step>
+
+NAT só na interface por onde sai a rota default (a da internet), nunca na do `/30` de SP. Se `iptables -t nat -S` já mostrar masquerade nessa interface, não empilhe outra.
+
+```bash title="Linux · troque eth-internet pelo nome real"
+sudo iptables -t nat -A POSTROUTING -o eth-internet -j MASQUERADE
+```
+
+`eth-internet` não é um nome fixo. É a interface da rota default, a que `ip route` mostrar.
+
+</Step>
+<Step>
+
+Se a ficha da anamnese mostrar que o firewall só usa nftables e já tem masquerade, não misture uma tabela iptables nova: siga o mecanismo que o equipamento já usa, com o professor.
+
+</Step>
+</Steps>
+
+<Callout type="warn">
+`ip route` e `iptables` somem no reboot se ninguém persistir do jeito da distribuição anotada na anamnese. Grave `ip route` e `iptables-save` no relatório da equipe SP e repita o teste depois de um reboot no ensaio.
+</Callout>
+
+## Resultado esperado
+
+`ip_forward = 1`, rotas `192.168.0.0/16` e `10.0.0.0/8` via SP, masquerade na interface da internet.
+
+## Como verificar
+
+De uma VM, mais adiante, `ping` até um IP público. Se o `ping` ao firewall funciona e o público não, o buraco está nesta página, não no RIP.
+
+## Se não funcionar
+
+- **A rota `/8` é recusada:** confira se `10.0.0.1` está no ar (`ping -c 3 10.0.0.1` a partir do firewall). Sem o vizinho, o `via` não instala. Se o kernel recusar o agregado mesmo com SP no ar, crie uma rota para cada rede do plano, sempre via `10.0.0.1`.
+- **NAT na interface errada:** o tráfego das ilhas é traduzido para o lado de SP. Apague a regra e recrie com `-o` na interface da default.
+- **Já havia regra e a navegação piorou:** `iptables -t nat -S` e remova só a linha que esta página acrescentou.
+
+<Checklist
+  id="deploy-firewall"
+  items={[
+    'ip_forward ligado e gravado',
+    'Rotas de retorno via SP',
+    'Masquerade só na interface da internet',
+    'Reboot de ensaio testado',
+  ]}
+/>

@@ -5,19 +5,19 @@ description: Semana 4 · implementar nos equipamentos a configuração validada 
 
 **Entrega:** `running-config` de cada roteador + diagrama final. **Ponto de controle G4:** ensaio geral aprovado e congelamento das configurações.
 
-Os roteadores são configurados a partir dos scripts validados na simulação. No fim da semana há um ensaio geral com todas as ilhas ao mesmo tempo.
-
-## Procedimentos previstos
-
-1. Realizar o cabeamento.
-2. Configurar as interfaces.
-3. Configurar RIP v2.
-4. Configurar a rota padrão em SP.
-5. Integrar o firewall Linux.
-6. Configurar as VMs Ubuntu em modo bridge, com IP fixo, gateway e DNS.
-7. Testar a conectividade, as rotas primárias e a contingência.
-8. Salvar as configurações.
+Os roteadores recebem a configuração que passou no Packet Tracer. No fim da semana todas as ilhas ensaiam ao mesmo tempo.
 
 <Callout type="warn">
-As configurações definitivas dependem da topologia aprovada no G2 e da simulação validada no G3. Depois do G4, só o professor autoriza mudanças.
+Interfaces e IPs são os do G2. Depois do G4, só o professor autoriza mudança.
 </Callout>
+
+## Ordem
+
+1. [Cabeamento](/docs/deploy/cabeamento).
+2. [Interfaces](/docs/deploy/interfaces), com `clock rate` no DCE.
+3. [RIP v2](/docs/deploy/rip-v2), a partir do [modelo](/docs/referencia/modelo-rip).
+4. [Rota padrão](/docs/deploy/rota-padrao), só em SP.
+5. [Firewall Linux](/docs/deploy/firewall), equipe SP.
+6. [VMs Ubuntu](/docs/deploy/vms), em bridge e com IP fixo.
+7. [Testes](/docs/deploy/testes) da primária, da contingência e da volta.
+8. [Salvar](/docs/deploy/salvar) o texto do `running-config` e congelar.

@@ -1,0 +1,86 @@
+---
+title: Salvar as configurações
+description: Semana 4 · gravar o running-config no roteador e entregar o texto do R9.
+---
+
+## O que fazer
+
+Persistir a configuração em cada roteador e arquivar o texto que o R9 pede.
+
+## Por que fazer
+
+O que fica só na memória some no desligamento. Depois do G4 a configuração congela: mudança só com o professor.
+
+## O que você precisa
+
+- Testes da página anterior aprovados no ensaio.
+- Console com log do PuTTY, como no backup da anamnese.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Evite a pausa de paginação e grave no startup:
+
+```bash title="Cisco IOS"
+terminal length 0
+copy running-config startup-config
+```
+
+</Step>
+<Step>
+
+Com o log do PuTTY ligado, gere o texto da entrega:
+
+```bash title="Cisco IOS"
+show running-config
+```
+
+Salve o arquivo como `R1-SP-running-config.txt`, trocando o roteador e a sigla. Um arquivo por roteador.
+
+</Step>
+<Step>
+
+Confira que o startup cabe o que você viu:
+
+```bash title="Cisco IOS"
+show startup-config
+```
+
+</Step>
+<Step>
+
+Atualize o diagrama final: primária e contingência em cores diferentes, cada salto com o IP de entrada que o `traceroute` mostrou. Entregue diagrama e `.txt` no G4.
+
+</Step>
+</Steps>
+
+<Callout type="error" title="Congelamento">
+Depois do G4, ninguém altera cabo, IP ou RIP sem o professor. Uma mudança silenciosa estraga a previsibilidade das outras ilhas.
+</Callout>
+
+Ao fim do projeto os roteadores voltam ao estado combinado com o professor, como nas [regras do laboratório](/docs/referencia/regras-do-laboratorio). O `.txt` desta página é o que permite refazer, e também o que permite restaurar.
+
+## Resultado esperado
+
+`startup-config` igual ao `running-config`, oito arquivos texto, diagrama final com as duas rotas.
+
+## Como verificar
+
+Abra o `.txt` fora do PuTTY: tem `router rip`, `version 2`, `no auto-summary`, os IPs do G2 e, só no arquivo de SP, a estática e `default-information originate`.
+
+## Se não funcionar
+
+- **O reload de ensaio volta limpo:** o `copy running-config startup-config` não foi feito, ou o registrador ficou em `0x2142` desde a [recuperação de senha](/docs/anamnese/recuperar-senha). `show version` tem de mostrar `0x2102`.
+- **Arquivo cortado no meio:** faltou `terminal length 0` ou o log do PuTTY não estava em "All session output".
+
+<Checklist
+  id="deploy-salvar"
+  items={[
+    'copy running-config startup-config',
+    'Txt de show running-config por roteador',
+    'Registrador 0x2102',
+    'Diagrama final com as duas rotas',
+  ]}
+/>

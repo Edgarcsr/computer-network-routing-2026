@@ -1,0 +1,66 @@
+---
+title: Cabear o laboratório
+description: Semana 4 · ligar os cabos do diagrama aprovado, sem ainda esperar up/up.
+---
+
+## O que fazer
+
+Conectar os enlaces do G2 nos roteadores, switches e no firewall, com etiqueta em cada cabo.
+
+## Por que fazer
+
+A configuração validada no `.pkt` não sobe se o cabo está em outra porta. O dono do enlace é quem mexe nele: lado DCE no serial, equipe de menor número no Ethernet, como nos [requisitos](/docs/referencia/requisitos).
+
+## O que você precisa
+
+- Diagrama do G2 e inventário de portas.
+- Cabos seriais DCE/DTE e Ethernet contados na anamnese.
+- Janela combinada com o Comitê. Não solte cabo de outra ilha.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Ligue uma Ethernet de cada roteador ao switch da própria ilha. Essa é a LAN.
+
+</Step>
+<Step>
+
+Nos seriais do backbone, encaixe o DCE na ponta dona do enlace e o DTE na outra. Etiquete o cabo com os dois roteadores e a rede `/30`.
+
+</Step>
+<Step>
+
+Enlaces Ethernet do backbone, se o desenho tiver, vão de porta livre a porta livre. SP liga ao firewall na interface que a [anamnese do firewall](/docs/anamnese/firewall) marcou.
+
+</Step>
+<Step>
+
+Confira no diagrama, cabo por cabo, antes de configurar IP. Nesta página o `up/up` ainda não é o resultado: falta clock e `no shutdown`.
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Cada enlace do diagrama tem um cabo etiquetado nas portas previstas. A LAN de cada ilha chega ao switch.
+
+## Como verificar
+
+Duas pessoas: uma lê o diagrama, a outra segue o cabo até as duas portas. `show ip interface brief` pode continuar `down` ou `administratively down`. Isso se resolve na página seguinte.
+
+## Se não funcionar
+
+- **Cabo curto ou sem par DCE/DTE:** não invente um enlace Ethernet no lugar sem o Comitê. O `.pkt` deixaria de valer.
+- **Ethernet entre roteadores não acende nem depois da configuração:** teste outro cabo. Nem todo equipamento faz o cruzamento sozinho.
+
+<Checklist
+  id="deploy-cabeamento"
+  items={[
+    'LAN de cada ilha no switch',
+    'Seriais com DCE na ponta dona',
+    'SP ligado ao firewall',
+    'Cabos etiquetados e conferidos no diagrama',
+  ]}
+/>

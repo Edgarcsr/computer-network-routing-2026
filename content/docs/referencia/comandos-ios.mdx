@@ -4,7 +4,7 @@ description: Cada comando de anamnese explicado individualmente, com contexto de
 ---
 
 <Callout type="info">
-Todos os comandos abaixo são de **consulta** e não alteram a configuração. Nem todos estarão disponíveis em todos os equipamentos ou versões de IOS.
+Todos os comandos abaixo são de **consulta** e não alteram a configuração. Nem todos estarão disponíveis em todos os equipamentos ou versões de IOS. A configuração do RIP está no [modelo](/docs/referencia/modelo-rip).
 </Callout>
 
 ## show version
@@ -78,3 +78,15 @@ show ip route
 **O que mostra:** rotas conhecidas e seus códigos (`C` conectada, `S` estática, `R` RIP).
 
 **Resultado esperado:** em roteador limpo, vazia ou só com redes conectadas; `Gateway of last resort is not set`.
+
+## show ip protocols
+
+```bash title="Cisco IOS · modo EXEC privilegiado"
+show ip protocols
+```
+
+**Quando usar:** depois de configurar o RIP, e de novo na avaliação, para provar versão, resumo e interface passiva.
+
+**O que mostra:** protocolo em uso, temporizadores, versão enviada e recebida, se o auto-summary está ligado, interfaces passivas e redes do `network`.
+
+**Resultado esperado:** `send version 2, receive version 2`, `Automatic network summarization is not in effect`, e a LAN da ilha em `Passive Interface(s)`. Em SP, a rota padrão consta como originada.

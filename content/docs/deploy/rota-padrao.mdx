@@ -1,0 +1,75 @@
+---
+title: Configurar a rota padrão em SP
+description: Semana 4 · estática só no roteador SP e anúncio com default-information originate.
+---
+
+## O que fazer
+
+Apontar SP para o firewall e anunciar a rota padrão pelo RIP. Nas outras ilhas, só receber.
+
+## Por que fazer
+
+O R2 é explícito: a estática mora em SP, e o restante aprende pelo RIP. Uma estática a mais, com distância administrativa 1, esconde a rota `R*` e o failover deixa de seguir o diagrama.
+
+## O que você precisa
+
+- RIP v2 nos oito roteadores.
+- Firewall já no IP combinado, no plano sugerido `10.0.0.2`.
+- Interface de SP até o firewall `up/up`.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Só na console de SP. Troque a interface de exemplo pelo nome real:
+
+```bash title="Cisco IOS · só SP"
+configure terminal
+ip route 0.0.0.0 0.0.0.0 10.0.0.2
+router rip
+ default-information originate
+ passive-interface FastEthernet0/1
+end
+```
+
+O `passive-interface` dessa porta evita RIP entre SP e o firewall. A LAN de SP continua passiva também.
+
+</Step>
+<Step>
+
+Nas outras ilhas, não entre `ip route`. Espere a `R*` e confira a métrica com a tabela do G2.
+
+</Step>
+</Steps>
+
+As rotas de retorno e o NAT ficam no [firewall](/docs/deploy/firewall), não neste roteador.
+
+## Resultado esperado
+
+SP mostra `S* 0.0.0.0/0` via o firewall. Cada outra ilha mostra `R*` com a métrica prevista. `Gateway of last resort` preenchido.
+
+## Como verificar
+
+```bash title="Cisco IOS"
+show ip route
+show ip protocols
+```
+
+Em `show ip protocols` de SP, a padrão está sendo originada. Nas outras, a interface da LAN segue passiva e não há `default-information originate`.
+
+## Se não funcionar
+
+- **Ilha sem `R*`:** o anúncio não chegou. Confira o RIP no caminho antes de criar estática local.
+- **`S*` fora de SP:** apague a estática nesse roteador. O comando é `no ip route 0.0.0.0 0.0.0.0` seguido, na mesma linha, do IP que aparece no `via`.
+- **Métrica inesperada:** `offset-list` ou enlace down. A conta está em [saltos](/docs/topologia/saltos).
+
+<Checklist
+  id="deploy-rota-padrao"
+  items={[
+    'ip route 0.0.0.0 só em SP',
+    'default-information originate só em SP',
+    'Interface do firewall passiva',
+    'Sete ilhas com R* na métrica prevista',
+  ]}
+/>

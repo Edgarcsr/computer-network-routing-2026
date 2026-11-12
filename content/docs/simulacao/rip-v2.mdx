@@ -1,0 +1,76 @@
+---
+title: Configurar RIP v2 no Packet Tracer
+description: Semana 3 · subir o RIP v2 nos oito roteadores de ilha, sem incluir o firewall.
+---
+
+## O que fazer
+
+Ativar RIP versão 2, com `no auto-summary`, nas redes da LAN e dos enlaces, e deixar a LAN passiva.
+
+## Por que fazer
+
+É o protocolo do projeto (R1 e R6). O roteador `FW` não entra: o firewall real não fala RIP, e um RIP a mais no arquivo ensinaria um caminho que o laboratório não vai ter.
+
+## O que você precisa
+
+- Interfaces já endereçadas.
+- O [modelo de configuração RIP](/docs/referencia/modelo-rip).
+
+## Como executar
+
+<Steps>
+<Step>
+
+Em cada um dos oito roteadores, adapte o bloco. O exemplo é PR no plano inicial de LAN; troque a rede `192.168.20.0` e o nome da interface pelos do G2:
+
+```bash title="Cisco IOS · exemplo da ilha PR"
+configure terminal
+router rip
+ version 2
+ no auto-summary
+ network 192.168.20.0
+ network 10.0.0.0
+ passive-interface FastEthernet0/0
+end
+```
+
+</Step>
+<Step>
+
+Confira que `network 10.0.0.0` é a rede de classe. Não crie uma linha `network` por `/30`: o IOS junta todas em `10.0.0.0`.
+
+</Step>
+<Step>
+
+Não configure `router rip` no `FW`.
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Os oito roteadores trocam RIP. As LANs das outras ilhas aparecem como rotas `R`. O `FW` não tem vizinho RIP.
+
+## Como verificar
+
+```bash title="Cisco IOS"
+show ip protocols
+```
+
+A saída diz `send version 2, receive version 2`, `Automatic network summarization is not in effect`, e a interface da LAN está em `Passive Interface(s)`.
+
+## Se não funcionar
+
+- **Ainda `send version 1`:** faltou `version 2`.
+- **`Automatic network summarization is in effect`:** faltou `no auto-summary` neste roteador.
+- **LAN do vizinho não aparece:** o `network` da LAN dele está ausente, ou a interface está down. Não resolva com rota estática.
+
+<Checklist
+  id="simulacao-rip"
+  items={[
+    'version 2 e no auto-summary nos 8',
+    'network da LAN e network 10.0.0.0',
+    'LAN em passive-interface',
+    'FW sem RIP',
+  ]}
+/>

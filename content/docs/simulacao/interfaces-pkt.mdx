@@ -1,0 +1,99 @@
+---
+title: Endereçar interfaces no Packet Tracer
+description: Semana 3 · aplicar no .pkt o plano de IPs do G2, inclusive DCE e estações.
+---
+
+## O que fazer
+
+Configurar endereço, máscara, descrição e `no shutdown` em cada interface do arquivo, e o `clock rate` no lado DCE.
+
+## Por que fazer
+
+Sem endereço o RIP não tem o que anunciar. No equipamento real o serial só sobe com clock no DCE; o Packet Tracer às vezes sobe mesmo assim, então o clock entra aqui para a configuração já nascer certa.
+
+## O que você precisa
+
+- Arquivo da página anterior.
+- Plano de IPs do G2.
+- O [modelo de enlace](/docs/referencia/modelo-rip).
+
+## Como executar
+
+<Steps>
+<Step>
+
+No roteador, aba CLI. Exemplo didático do lado DCE de SP no enlace com PR (se o G2 aprovou outros números, use os do G2):
+
+```bash title="Cisco IOS · exemplo"
+configure terminal
+interface Serial0/0/0
+ description Enlace para PR (DCE)
+ ip address 10.1.2.1 255.255.255.252
+ clock rate 64000
+ no shutdown
+interface FastEthernet0/0
+ description LAN da ilha SP
+ ip address 192.168.10.1 255.255.255.0
+ no shutdown
+end
+```
+
+</Step>
+<Step>
+
+Repita em cada ponta. O DTE não leva `clock rate`. A máscara do `/30` é `255.255.255.252`; a da LAN é `255.255.255.0`. O valor `64000` é o exemplo do Comitê se ele não tiver escolhido outro.
+
+</Step>
+<Step>
+
+No `FW`, enderece o enlace com SP e a rede fictícia do servidor. Sem RIP:
+
+```bash title="Cisco IOS · roteador FW, exemplo do plano sugerido"
+configure terminal
+interface FastEthernet0/0
+ description Enlace para SP
+ ip address 10.0.0.2 255.255.255.252
+ no shutdown
+interface FastEthernet0/1
+ description Rede fictícia do servidor
+ ip address 203.0.113.1 255.255.255.0
+ no shutdown
+end
+```
+
+</Step>
+<Step>
+
+Em cada PC: Desktop, IP Configuration, estático. Endereço da LAN da ilha (não use `.0`, `.1` nem `.255`), máscara `255.255.255.0`, gateway no `.1` do roteador. No servidor, `203.0.113.10`, máscara `255.255.255.0`, gateway `203.0.113.1`.
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Interfaces com cabo em `up/up`. PCs com IP da sua LAN.
+
+## Como verificar
+
+```bash title="Cisco IOS"
+show ip interface brief
+show controllers serial
+```
+
+Cada serial DCE mostra clock. Os dois lados do `/30` estão na mesma rede, com `.1` e `.2` trocados conforme o plano.
+
+## Se não funcionar
+
+- **`administratively down`:** faltou `no shutdown`.
+- **Serial `up/down` ou `down/down`:** clock no lado errado, cabo no WIC errado, ou o outro lado ainda desligado.
+- **`clock rate` recusado:** a interface está DTE. Passe o comando para o outro roteador.
+
+<Checklist
+  id="simulacao-interfaces"
+  items={[
+    'IPs do G2 em todas as pontas',
+    'clock rate só no DCE',
+    'description e no shutdown',
+    'PCs e servidor com gateway',
+  ]}
+/>
