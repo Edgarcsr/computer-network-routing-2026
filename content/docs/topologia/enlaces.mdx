@@ -1,0 +1,71 @@
+---
+title: Definir os enlaces do backbone
+description: Semana 2 · um único diagrama em que cada ilha tem dois caminhos até SP sem enlace em comum.
+---
+
+## O que fazer
+
+Desenhar os enlaces entre os roteadores, dentro do limite de portas da página anterior.
+
+## Por que fazer
+
+O R3 pede, em cada ilha exceto SP, dois caminhos até SP que não compartilhem enlace. O R4 pede que a primária tenha menos saltos que a contingência. As duas regras se resolvem neste desenho, não na hora da avaliação.
+
+Dois vizinhos não bastam. Os dois podem depender do mesmo enlace mais à frente e, cortado esse enlace, os dois caminhos caem juntos.
+
+## O que você precisa
+
+- Tabela de portas livres.
+- Os [requisitos R3 e R4](/docs/referencia/requisitos).
+
+## Como executar
+
+<Steps>
+<Step>
+
+O Comitê publica um diagrama só. Ilha nenhuma inventa um enlace paralelo ao desse desenho.
+
+</Step>
+<Step>
+
+Para cada ilha, trace no papel dois caminhos até SP. Risque os enlaces do primeiro e confira que o segundo ainda chega a SP.
+
+</Step>
+<Step>
+
+Dê um dono a cada enlace, como nos requisitos: no serial, a equipe do lado DCE; no Ethernet, a de menor número. O dono configura o `clock rate` e é o canal para mexer no cabo.
+
+</Step>
+<Step>
+
+Marque no desenho, mesmo que ainda sem cor definitiva, qual caminho é a primária e qual é a contingência. O diagrama final da semana 4 separa os dois por cor.
+
+</Step>
+</Steps>
+
+<Callout type="info" title="Anel simples">
+Um anel com os oito roteadores cumpre o R3 e fura o R4 na ilha oposta a SP: os dois lados têm 4 saltos. Como tratar esse empate está em [empates](/docs/topologia/empates).
+</Callout>
+
+## Resultado esperado
+
+Um diagrama do backbone com todos os enlaces, o dono de cada um e as duas rotas de cada ilha.
+
+## Como verificar
+
+Percorra as oito ilhas com outra pessoa: ela aponta a primária e a contingência sem a sua ajuda. Se a contingência usa um enlace que a primária também usa, o R3 não foi atendido.
+
+## Se não funcionar
+
+- **Falta porta para o enlace que o desenho pede:** volte à tabela de vizinhos. Não desenhe porta que o inventário não tem.
+- **Oito diagramas diferentes:** não está pronto para o G2. Vale o desenho do Comitê.
+
+<Checklist
+  id="topologia-enlaces"
+  items={[
+    'Diagrama único do Comitê',
+    'Cada ilha, exceto SP, com dois caminhos sem enlace em comum',
+    'Dono definido em cada enlace',
+    'Primária e contingência marcadas',
+  ]}
+/>

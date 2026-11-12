@@ -1,0 +1,96 @@
+---
+title: Testar caminhos, failover e retorno
+description: Semana 4 · ensaio geral, da VM até a internet, com a queda de um enlace da primária.
+---
+
+## O que fazer
+
+Provar, com todas as ilhas no ar, a primária, a contingência e a volta pelo firewall.
+
+## Por que fazer
+
+Este ensaio é o G4. A avaliação repete o mesmo roteiro, com o professor escolhendo o enlace e o site. Tempo de convergência se mede aqui, no equipamento, não no Packet Tracer.
+
+## O que você precisa
+
+- RIP, rota padrão, firewall e VMs prontos.
+- Diagrama com as duas rotas e a lista de IPs de [saltos](/docs/topologia/saltos).
+- Janela em que nenhuma outra equipe derruba enlace.
+
+## Como executar
+
+<Steps>
+<Step>
+
+De uma VM, suba a escada. Pare no primeiro degrau que falhar. Os endereços do bloco são o exemplo didático: troque pelos do seu diagrama. A ordem é que importa.
+
+```bash title="Ubuntu · endereços de exemplo"
+ping -c 3 192.168.20.1
+ping -c 3 10.1.2.1
+ping -c 3 10.0.0.1
+ping -c 3 10.0.0.2
+ping -c 3 1.1.1.1
+```
+
+Gateway da ilha, um IP de SP no caminho, o IP de SP no firewall, o firewall, um IP público.
+
+</Step>
+<Step>
+
+Primária, até o firewall. O site é de teste; na avaliação quem escolhe é o professor:
+
+```bash title="Ubuntu"
+traceroute -n -I 1.1.1.1
+```
+
+`-n` não resolve nome. `-I` usa ICMP. Sem `-I` o padrão é UDP e a linha vira `* * *` quando o firewall filtra.
+
+</Step>
+<Step>
+
+Combine qual enlace da primária vai cair. O dono do enlace faz `shutdown` na interface, ou retira o cabo se foi o combinado no G4. Cronometre. No roteador da ilha:
+
+```bash title="Cisco IOS"
+show ip route
+```
+
+`debug ip rip` só se precisar ver o anúncio, e `undebug all` em seguida.
+
+</Step>
+<Step>
+
+Novo `traceroute -n -I` na VM. O caminho até o firewall é a contingência, e ainda passa por SP. Depois `no shutdown` (ou o cabo de volta) e a primária tem de retornar.
+
+</Step>
+</Steps>
+
+A referência de 4 minutos é a janela citada no [roteiro](/docs/avaliacao/roteiro), o tempo do flush do RIP. Com `shutdown` ou cabo fora, a troca costuma ser bem mais curta. Anote o número medido: a arguição pergunta.
+
+## Resultado esperado
+
+Primária igual ao diagrama, contingência igual ao diagrama, retorno à primária, e um tempo anotado.
+
+## Como verificar
+
+Os prints mostram os IPs previstos até o firewall. Saltos depois do firewall são a internet e não se comparam ao desenho.
+
+## Se não funcionar
+
+| Até onde chega | Onde olhar |
+|---|---|
+| Nem o gateway | VM em NAT, ou LAN do roteador down |
+| O vizinho, não SP | RIP ou enlace no meio da primária |
+| SP, não o firewall | Estática de SP ou cabo SP–firewall |
+| O firewall, não o IP público | `ip_forward`, rota de retorno ou NAT |
+| IP público, `traceroute` com `* * *` | Rodar de novo com `-I` |
+| Caminho completo, IPs diferentes | Métrica empatada ou enlace que não era o da primária |
+
+<Checklist
+  id="deploy-testes"
+  items={[
+    'Ping até um IP público',
+    'traceroute -n -I da primária confere',
+    'Queda cronometrada e contingência confere',
+    'Primária restaurada',
+  ]}
+/>

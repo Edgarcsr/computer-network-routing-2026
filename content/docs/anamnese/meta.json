@@ -16,10 +16,12 @@
     "cabos-dce-dte",
     "clock-rate",
     "configs-antigas",
+    "recuperar-senha",
     "---Levantamento das ilhas---",
     "estacoes",
     "hipervisor",
     "imagens-ubuntu",
+    "firewall",
     "---Fechamento---",
     "modelo-inventario",
     "fechar-inventario"

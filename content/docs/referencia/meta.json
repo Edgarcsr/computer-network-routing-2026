@@ -1,1 +1,5 @@
-{ "title": "Referência", "defaultOpen": true, "pages": ["requisitos", "comandos-ios", "glossario", "regras-do-laboratorio"] }
+{
+  "title": "Referência",
+  "defaultOpen": true,
+  "pages": ["requisitos", "modelo-rip", "comandos-ios", "glossario", "regras-do-laboratorio"]
+}

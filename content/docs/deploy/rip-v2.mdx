@@ -1,0 +1,79 @@
+---
+title: Configurar RIP v2 nos roteadores
+description: Semana 4 · repetir no equipamento o RIP que o Packet Tracer já validou.
+---
+
+## O que fazer
+
+Subir RIP v2, `no auto-summary` e a LAN passiva, com as mesmas redes do `.pkt`.
+
+## Por que fazer
+
+É o R1 e o R6. Configuração diferente da simulada produz outra métrica, e o diagrama deixa de prever o `traceroute`.
+
+## O que você precisa
+
+- Interfaces `up/up`.
+- O [modelo de configuração RIP](/docs/referencia/modelo-rip).
+- O `.pkt` do G3, para copiar rede e interface que já funcionaram.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Em modo privilegiado, adapte o exemplo da ilha PR. A rede `192.168.20.0` e `FastEthernet0/0` saem do G2:
+
+```bash title="Cisco IOS · exemplo da ilha PR"
+configure terminal
+router rip
+ version 2
+ no auto-summary
+ network 192.168.20.0
+ network 10.0.0.0
+ passive-interface FastEthernet0/0
+end
+```
+
+</Step>
+<Step>
+
+Não crie `network` separado para cada `/30`. Um `network 10.0.0.0` cobre os enlaces `10.x`.
+
+</Step>
+<Step>
+
+Não configure RIP no firewall. A rota padrão de SP é a [página seguinte](/docs/deploy/rota-padrao).
+
+</Step>
+</Steps>
+
+Ao fim da aula, salve como nas [regras do laboratório](/docs/referencia/regras-do-laboratorio). O arquivo texto oficial é o da página [salvar](/docs/deploy/salvar).
+
+## Resultado esperado
+
+`show ip protocols` com versão 2, sem auto-summary, LAN passiva. LANs das outras ilhas começam a aparecer como `R`.
+
+## Como verificar
+
+```bash title="Cisco IOS"
+show ip protocols
+show ip route
+```
+
+Não deve aparecer `10.0.0.0/8` aprendida por RIP. Se aparecer, alguém ainda resume as rotas.
+
+## Se não funcionar
+
+- **Vizinho ausente com a interface `up/up`:** `network` errado ou RIP v1 de um lado e v2 do outro. Os dois lados precisam de `version 2`.
+- **Tentação de rota estática para a LAN vizinha:** não substitui o RIP. O R1 não deixa.
+
+<Checklist
+  id="deploy-rip"
+  items={[
+    'version 2 e no auto-summary',
+    'network da LAN e network 10.0.0.0',
+    'LAN passiva',
+    'Sem rota estática para rede de outra ilha',
+  ]}
+/>

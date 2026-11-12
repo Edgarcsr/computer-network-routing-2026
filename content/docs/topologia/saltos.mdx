@@ -1,0 +1,105 @@
+---
+title: Contar os saltos até SP
+description: Semana 2 · ligar a métrica do RIP aos IPs que o traceroute mostra.
+---
+
+## O que fazer
+
+Transformar cada caminho do diagrama em métrica RIP e na lista de IPs que o `traceroute` deve imprimir.
+
+## Por que fazer
+
+A nota da rota primária e a do failover comparam o `traceroute` com o diagrama, salto a salto. A métrica em `show ip route` é o jeito de saber, antes do teste, qual caminho o RIP escolheu.
+
+## O que você precisa
+
+- Tabela de caminhos.
+- Plano de IPs do G2. Os números abaixo são um fragmento didático, não o backbone do laboratório.
+
+## A conta
+
+No roteador da ilha, a métrica da rota padrão é o número de enlaces de backbone entre ele e SP.
+
+Na tabela do IOS a métrica aparece depois da barra, no formato `[120/N]`: 120 é a distância administrativa do RIP e N é a métrica. A rota padrão aprendida vem marcada como `R*`. Em SP a padrão é estática, `S*`, com distância 1.
+
+O `via` dessa linha é só o próximo roteador, não o caminho inteiro.
+
+No `traceroute` feito de uma VM:
+
+- o salto 1 é o gateway da própria ilha;
+- SP aparece no salto N+1;
+- o firewall aparece no salto N+2;
+- o que vier depois do firewall não entra no diagrama.
+
+O IP de cada salto é o da interface virada para o salto anterior: por ela o pacote entrou, e por ela a resposta volta.
+
+## Exemplo didático
+
+Plano inicial de LAN, só para ter números. Se o G2 ficar com o kickoff, a LAN de PR é `192.168.2.0/24` e a de SC é `192.168.7.0/24`. Os enlaces `10.x` não mudam.
+
+Fragmento, de propósito incompleto (SC só tem um caminho aqui):
+
+```text
+VM da PR --- PR --- SP --- firewall
+VM da SC --- SC --- PR --- SP --- firewall
+```
+
+| Enlace | Rede | Quem usa .1 | Quem usa .2 |
+|---|---|---|---|
+| SP–PR | 10.1.2.0/30 | SP 10.1.2.1 | PR 10.1.2.2 |
+| PR–SC | 10.2.7.0/30 | PR 10.2.7.1 | SC 10.2.7.2 |
+| SP–firewall | 10.0.0.0/30 | SP 10.0.0.1 | firewall 10.0.0.2 |
+
+LAN de PR `192.168.20.0/24`, gateway `192.168.20.1`. LAN de SC `192.168.70.0/24`, gateway `192.168.70.1`.
+
+PR está a um enlace de SP. Métrica 1. Da VM de PR:
+
+| Salto | IP | Quem responde |
+|---|---|---|
+| 1 | 192.168.20.1 | PR, o gateway |
+| 2 | 10.1.2.1 | SP |
+| 3 | 10.0.0.2 | firewall |
+
+A linha no roteador de PR:
+
+```text
+R*  0.0.0.0/0 [120/1] via 10.1.2.1, Serial0/0/0
+```
+
+SC está a dois enlaces (SC–PR e PR–SP). Métrica 2. Da VM de SC:
+
+| Salto | IP | Quem responde |
+|---|---|---|
+| 1 | 192.168.70.1 | SC |
+| 2 | 10.2.7.1 | PR |
+| 3 | 10.1.2.1 | SP |
+| 4 | 10.0.0.2 | firewall |
+
+`Serial0/0/0` no exemplo é nome de interface, não o do seu roteador.
+
+<Callout type="warn">
+Se a equipe usar `offset-list`, N deixa de ser só a contagem de enlaces: o diagrama mostra a métrica já com o acréscimo. Sem isso o `show ip route` não bate com o papel.
+</Callout>
+
+## Resultado esperado
+
+Cada caminho da tabela de rotas previstas tem a métrica N e a lista de IPs na ordem do `traceroute`, até o firewall.
+
+## Como verificar
+
+Para uma ilha, N+1 aponta para um IP de SP e N+2 para o IP do firewall no enlace `10.0.0.0/30`. Se o salto de SP não for um endereço de SP, a lista está deslocada.
+
+## Se não funcionar
+
+- **A lista começa no vizinho, sem o gateway:** essa lista é um `traceroute` feito no roteador, não na VM. A avaliação sai da VM. Inclua o gateway como salto 1.
+- **Dois IPs possíveis para o mesmo roteador:** use o da interface que olha para o salto anterior, não o da LAN desse roteador.
+
+<Checklist
+  id="topologia-saltos"
+  items={[
+    'Métrica N igual ao número de enlaces até SP',
+    'Lista de IPs começa no gateway da VM',
+    'SP no salto N+1 e firewall no N+2',
+    'Offset, se existir, já está somado na métrica',
+  ]}
+/>

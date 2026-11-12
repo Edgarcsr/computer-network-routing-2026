@@ -1,0 +1,80 @@
+---
+title: Verificar as tabelas de roteamento
+description: Semana 3 · conferir código, métrica e próximo salto de cada ilha no Packet Tracer.
+---
+
+## O que fazer
+
+Ler `show ip route` e `show ip protocols` em cada roteador e comparar com a tabela de rotas previstas.
+
+## Por que fazer
+
+O G3 aprova a simulação quando o caminho do arquivo é o do diagrama. A métrica errada aqui vira o `traceroute` errado na avaliação.
+
+## O que você precisa
+
+- RIP e rota padrão já configurados.
+- Tabela de caminhos do G2, com a métrica de [saltos](/docs/topologia/saltos).
+
+## Como executar
+
+<Steps>
+<Step>
+
+Em cada roteador de ilha:
+
+```bash title="Cisco IOS"
+show ip route
+show ip protocols
+```
+
+</Step>
+<Step>
+
+Ache a rota padrão. Fora de SP ela se parece com o exemplo de PR a um enlace de SP (interface e números são os do exemplo didático):
+
+```text
+Gateway of last resort is 10.1.2.1 to network 0.0.0.0
+R*    0.0.0.0/0 [120/1] via 10.1.2.1, 00:00:12, Serial0/0/0
+```
+
+O número depois da barra é a métrica. O `via` é o próximo roteador, não a lista inteira do caminho.
+
+</Step>
+<Step>
+
+Confira também uma LAN de outra ilha. Ela deve aparecer como `R` com a máscara `/24`, não como `10.0.0.0/8` nem como `192.168.0.0/16`.
+
+</Step>
+<Step>
+
+Em SP, a padrão é `S*`, via o IP do firewall, com distância administrativa 1.
+
+</Step>
+</Steps>
+
+Uma linha `L` em IOS recente é o endereço `/32` da própria interface. Não é rota RIP.
+
+## Resultado esperado
+
+Métrica e próximo salto iguais à tabela prevista nas oito ilhas. `show ip protocols` com versão 2, sem auto-summary, LAN passiva.
+
+## Como verificar
+
+Imprima ou exporte a tela de cada `show ip route`. Esse print entra nas evidências do G3, junto com o `tracert`.
+
+## Se não funcionar
+
+- **Métrica diferente do papel:** caminho a mais, `offset-list` esquecido no arquivo, ou auto-summary. Não altere o diagrama para caber no erro sem o Comitê.
+- **Duas rotas `R*` para `0.0.0.0/0`:** empate. Volte a [empates](/docs/topologia/empates) antes de seguir.
+- **`possibly down` ou métrica 16:** rota inalcançável. Veja o enlace down e a [convergência](/docs/simulacao/convergencia).
+
+<Checklist
+  id="simulacao-verificar-rotas"
+  items={[
+    'R* nas 7 ilhas com a métrica prevista',
+    'S* só em SP',
+    'LANs /24 aprendidas por R',
+    'Print de show ip route guardado',
+  ]}
+/>

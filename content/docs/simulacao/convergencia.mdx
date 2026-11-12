@@ -1,0 +1,81 @@
+---
+title: Verificar convergência e a rota alternativa
+description: Semana 3 · reconhecer a contingência na tabela e devolver a rede à primária.
+---
+
+## O que fazer
+
+Confirmar que, depois da queda, a tabela usa a contingência prevista, e então religar o enlace.
+
+## Por que fazer
+
+O failover da avaliação pede o caminho certo dentro da janela combinada no G4 (referência: 4 minutos). O Packet Tracer serve para ver o caminho. O tempo que ele leva não é o tempo do roteador real.
+
+## O que você precisa
+
+- Um enlace da primária já em `shutdown`, como na página anterior.
+
+## Como executar
+
+<Steps>
+<Step>
+
+No roteador da ilha, a rota `R*` deve ter o `via` e a métrica da contingência. Métrica 16, ou a marca `possibly down`, significa que o RIP ainda trata o destino como inalcançável.
+
+</Step>
+<Step>
+
+Se precisar ver os anúncios:
+
+```bash title="Cisco IOS"
+debug ip rip
+```
+
+Encerre com `undebug all`. Quem decide se convergiu é o `show ip route`, não a quantidade de linhas do debug.
+
+</Step>
+<Step>
+
+Com o caminho certo no `tracert`, devolva o enlace:
+
+```bash title="Cisco IOS"
+configure terminal
+interface Serial0/0/0
+ no shutdown
+end
+```
+
+</Step>
+<Step>
+
+Espere a primária voltar a ser a `R*` e faça um `tracert` final. Salve o `.pkt`. Esse arquivo, mais os prints, é a entrega do G3.
+
+</Step>
+</Steps>
+
+<Callout type="warn" title="Dois jeitos de cair">
+`shutdown` derruba a interface e o RIP avisa na hora: no equipamento, a troca costuma levar segundos. Se o vizinho para de anunciar e a interface continua `up`, a rota só é invalidada aos 180 s e sai da tabela aos 240 s. O simulador não reproduz esses relógios. Meça o tempo no ensaio do [deploy](/docs/deploy/testes).
+</Callout>
+
+## Resultado esperado
+
+Contingência igual ao diagrama enquanto o enlace está down; primária de volta depois do `no shutdown`.
+
+## Como verificar
+
+Os três estados ficaram registrados: primária, contingência, primária de novo. A métrica de cada um é a da tabela prevista.
+
+## Se não funcionar
+
+- **A primária não volta:** a interface ficou down, o cabo do `.pkt` saiu, ou um `offset-list` deixou a contingência com métrica melhor. `show ip interface brief` primeiro.
+- **Debug sem fim:** `undebug all` antes de seguir. Debug esquecido no console atrapalha o restante da aula.
+
+<Checklist
+  id="simulacao-convergencia"
+  items={[
+    'Métrica da contingência conferida',
+    'undebug all depois do debug',
+    'Primária restaurada com no shutdown',
+    'Arquivo .pkt e prints entregues ao G3',
+  ]}
+/>

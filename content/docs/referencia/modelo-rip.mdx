@@ -1,0 +1,79 @@
+---
+title: Modelo de configuração RIP
+description: Comandos comuns aos oito roteadores. Interfaces e IPs são os aprovados no G2.
+---
+
+Os blocos são um modelo para copiar e adaptar. Nomes como `FastEthernet0/0` e o endereço `192.168.20.0` aparecem só para mostrar o formato: a LAN do exemplo é a do plano inicial da equipe para PR, e some se o G2 escolher outro plano. A conta dos saltos está em [saltos](/docs/topologia/saltos).
+
+<Callout type="error" title="Fora do modelo">
+Não configure OSPF. Não crie `ip route 0.0.0.0 0.0.0.0` em roteador que não seja SP. Não deixe o auto-summary ligado.
+</Callout>
+
+## Nos oito roteadores
+
+```bash title="Cisco IOS · exemplo da ilha PR"
+configure terminal
+router rip
+ version 2
+ no auto-summary
+ network 192.168.20.0
+ network 10.0.0.0
+ passive-interface FastEthernet0/0
+end
+```
+
+| Linha | Função |
+|---|---|
+| `version 2` | RIP v2, que envia a máscara. Sem essa linha o IOS usa RIP v1. |
+| `no auto-summary` | Anuncia cada rede com a máscara configurada. Obrigatório (R1). |
+| `network 192.168.20.0` | Liga o RIP na LAN. Troque pela rede de classe que o G2 aprovou. |
+| `network 10.0.0.0` | Liga o RIP em todo enlace `10.x`. O IOS não guarda o `/30`: `network 10.2.5.0` é gravado como `network 10.0.0.0`. |
+| `passive-interface` | A LAN não envia atualização RIP (R6). A rede da LAN continua sendo anunciada pelos enlaces do backbone. |
+
+`FastEthernet0/0` é nome de exemplo. Use a interface da LAN que o `show ip interface brief` mostrou na anamnese.
+
+## Só em SP
+
+O bloco dos oito, com a LAN de SP no `network`, mais:
+
+```bash title="Cisco IOS · só SP"
+configure terminal
+ip route 0.0.0.0 0.0.0.0 10.0.0.2
+router rip
+ default-information originate
+ passive-interface FastEthernet0/1
+end
+```
+
+`10.0.0.2` é o firewall no [plano sugerido](/docs/referencia/requisitos). `FastEthernet0/1` é um nome de exemplo para o cabo até o firewall. Esse segundo `passive-interface` impede que SP anuncie RIP para o firewall, que não fala RIP (R1). A LAN de SP também fica passiva (R6).
+
+`default-information originate` fica só em SP. O vizinho aprende a rota padrão com métrica 1 e os demais a repassam. Eles não repetem o comando e não ganham rota estática.
+
+## Enlace entre dois roteadores
+
+```bash title="Cisco IOS · exemplo, lado DCE"
+configure terminal
+interface Serial0/0/0
+ description Enlace para PR (DCE)
+ ip address 10.1.2.1 255.255.255.252
+ clock rate 64000
+ no shutdown
+end
+```
+
+No DTE o bloco é o mesmo, sem `clock rate`, com o outro endereço do `/30`. `clock rate` no DTE o IOS recusa. A máscara de um `/30` é `255.255.255.252`.
+
+`64000` é um valor frequente de laboratório, não uma exigência: o Comitê escolhe um número e usa o mesmo em todos os DCE. O RIP ignora essa velocidade; sem clock no DCE o serial real não sobe.
+
+## Conferência
+
+```bash title="Cisco IOS"
+show ip protocols
+show ip route
+```
+
+Em `show ip protocols`: `send version 2, receive version 2`, `Automatic network summarization is not in effect`, e a LAN em `Passive Interface(s)`.
+
+Na tabela, a rota padrão das outras ilhas é `R*`. Em SP é `S*`. Uma rede `10.0.0.0/8` aprendida por RIP indica auto-summary ainda ligado em algum roteador.
+
+O passo a passo está na [simulação](/docs/simulacao/rip-v2) e no [deploy](/docs/deploy/rip-v2).

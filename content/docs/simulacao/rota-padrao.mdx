@@ -1,0 +1,83 @@
+---
+title: Configurar a rota padrão no Packet Tracer
+description: Semana 3 · rota estática só em SP, anúncio pelo RIP e rotas de volta no FW.
+---
+
+## O que fazer
+
+Fazer SP apontar para o firewall e anunciar essa rota pelo RIP. No `FW`, criar as rotas de retorno do [glossário](/docs/referencia/glossario).
+
+## Por que fazer
+
+O R2 concentra a rota padrão em SP. O R5 exige o caminho de volta para as LANs e para as redes `10.x`. Sem as duas pontas, o `tracert` atravessa a ida e para na volta.
+
+## O que você precisa
+
+- RIP v2 já ativo nos oito roteadores.
+- `FW` endereçado e sem RIP.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Só em SP. `FastEthernet0/1` é o nome de exemplo da interface que vai ao `FW`:
+
+```bash title="Cisco IOS · só SP"
+configure terminal
+ip route 0.0.0.0 0.0.0.0 10.0.0.2
+router rip
+ default-information originate
+ passive-interface FastEthernet0/1
+end
+```
+
+</Step>
+<Step>
+
+No `FW`, as rotas de retorno. A rede conectada `10.0.0.0/30` é mais específica que o `/8`, então o enlace com SP continua direto:
+
+```bash title="Cisco IOS · roteador FW"
+configure terminal
+ip route 192.168.0.0 255.255.0.0 10.0.0.1
+ip route 10.0.0.0 255.0.0.0 10.0.0.1
+end
+```
+
+</Step>
+<Step>
+
+Não repita `ip route 0.0.0.0 0.0.0.0` nas outras ilhas. Elas aprendem a padrão pelo RIP.
+
+</Step>
+</Steps>
+
+O `/16` cobre as duas propostas de LAN (`192.168.10.0/24` e `192.168.1.0/24`). O `/8` cobre os enlaces `10.A.B.0/30`.
+
+## Resultado esperado
+
+Em SP a padrão é `S*`, via `10.0.0.2`. Nas outras ilhas é `R*`, com a métrica prevista no diagrama. `Gateway of last resort` deixa de ser "not set".
+
+## Como verificar
+
+```bash title="Cisco IOS"
+show ip route
+```
+
+Nenhum roteador de ilha, fora SP, mostra `S*`.
+
+## Se não funcionar
+
+- **`R*` ausente na ilha:** SP está sem a estática, sem `default-information originate`, ou o RIP não chegou até lá. Não crie outra estática para "adiantar".
+- **`S*` numa ilha que não é SP:** apague essa estática. Ela fura o R2 e esconde o RIP, porque a distância administrativa 1 ganha do 120.
+
+<Checklist
+  id="simulacao-rota-padrao"
+  items={[
+    'Estática só em SP, para o FW',
+    'default-information originate só em SP',
+    'Enlace do FW passivo no RIP',
+    'Rotas de retorno no FW',
+    'Demais ilhas com R* e sem S*',
+  ]}
+/>

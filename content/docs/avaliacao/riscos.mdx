@@ -9,8 +9,8 @@ Os dois riscos que mais podem quebrar a avaliação são o **empate de saltos** 
 
 | Risco | O que acontece | Como evitar |
 |---|---|---|
-| Empate de saltos até SP | O IOS balanceia entre até 4 caminhos de mesmo custo e o traceroute alterna. Num anel simples de 8 roteadores, a ilha oposta a SP fica a 4 saltos pelos dois lados. | Enlaces extras (cordas) que quebrem o empate, ou `offset-list` documentado. Conferir ilha por ilha no G2. |
-| Convergência lenta | Com enlace que cai "em silêncio", a rota só é invalidada após 180 s e pode ficar em holddown por mais 180 s. | Medir o tempo real no ensaio; padronizar como o enlace será desligado; se preciso, `timers basic` reduzidos e iguais em todos. |
+| Empate de saltos até SP | O IOS balanceia entre até 4 caminhos de mesmo custo e o traceroute alterna. Num anel simples de 8 roteadores, a ilha oposta a SP fica a 4 saltos pelos dois lados. | Enlaces extras (cordas) que quebrem o empate, ou `offset-list` documentado. Conferir ilha por ilha no G2, também depois do corte da primária. O passo a passo está em [empates](/docs/topologia/empates). |
+| Convergência lenta | Com `shutdown` ou cabo fora, a atualização disparada costuma trocar o caminho em segundos. Se a interface continua up e o vizinho cala, a rota só é invalidada após 180 s, pode ficar em holddown e sai da tabela aos 240 s. | No ensaio, cronometrar do jeito que o professor vai desligar. `timers basic` só com o mesmo valor nos oito roteadores. |
 | Tempo do Packet Tracer | O simulador converge diferente do equipamento real. | Usar o PT para validar caminhos, não tempos. |
 | RIP ignora largura de banda | Um serial lento conta o mesmo que uma FastEthernet. | Tratar como conteúdo: é ótima pergunta para a arguição. |
 | Traceroute filtrado | O padrão do Linux usa UDP, que firewalls bloqueiam; saltos aparecem como `* * *`. | `traceroute -I` (ICMP) ou `-T`; instalar o pacote nas VMs antes. |

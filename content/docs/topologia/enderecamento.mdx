@@ -1,0 +1,107 @@
+---
+title: Endereçar LANs e enlaces
+description: Semana 2 · aplicar o plano de IPs e escolher, no G2, qual das duas LANs vale.
+---
+
+## O que fazer
+
+Atribuir uma rede a cada LAN e a cada enlace, sem endereço repetido.
+
+## Por que fazer
+
+O RIP só anuncia o que foi endereçado. IP duplicado ou `/30` com o host errado derruba o enlace e, na rede compartilhada, a ilha do vizinho.
+
+## O que você precisa
+
+- Diagrama de enlaces.
+- O [plano sugerido](/docs/referencia/requisitos) e a tabela da [página inicial](/docs).
+
+## Duas propostas de LAN
+
+O número da ilha é o do roteador (R1 é a ilha 1). O G2 escolhe uma coluna. O gateway sugerido é o endereço `.1` dessa rede, que é o exemplo do kickoff (ilha 3, `192.168.3.1`).
+
+| Ilha | Roteador | Plano inicial da equipe | Plano do kickoff |
+|---|---|---|---|
+| 1 · SP | R1 | 192.168.10.0/24 | 192.168.1.0/24 |
+| 2 · PR | R2 | 192.168.20.0/24 | 192.168.2.0/24 |
+| 3 · PI | R3 | 192.168.30.0/24 | 192.168.3.0/24 |
+| 4 · PB | R4 | 192.168.40.0/24 | 192.168.4.0/24 |
+| 5 · TO | R5 | 192.168.50.0/24 | 192.168.5.0/24 |
+| 6 · MG | R6 | 192.168.60.0/24 | 192.168.6.0/24 |
+| 7 · SC | R7 | 192.168.70.0/24 | 192.168.7.0/24 |
+| 8 · BA | R8 | 192.168.80.0/24 | 192.168.8.0/24 |
+
+Máscara da LAN no IOS: `255.255.255.0`.
+
+## Enlaces
+
+O plano de enlace é o mesmo nas duas colunas. Entre a ilha A e a ilha B, com A menor que B, a rede é `10.A.B.0/30`.
+
+| Papel | Endereço |
+|---|---|
+| Rede | 10.A.B.0 |
+| Ilha de menor número | 10.A.B.1 |
+| Ilha de maior número | 10.A.B.2 |
+| Broadcast, não usar | 10.A.B.3 |
+
+SP e o firewall já estão fixos no plano: rede `10.0.0.0/30`, SP em `10.0.0.1`, firewall em `10.0.0.2`.
+
+Máscara do enlace no IOS: `255.255.255.252`.
+
+Convenção para não duplicar: a ilha de menor número fica com `.1`. O Comitê pode inverter um enlace, desde que os dois lados e o diagrama digam a mesma coisa.
+
+<Callout type="warn" title="O número do enlace é o da ilha, de 1 a 8">
+PR é a ilha 2, não a rede `192.168.20.0`. O enlace SP–PR é `10.1.2.0/30`, não `10.10.20.0/30`. PI (3) com MG (6) é `10.3.6.0/30`.
+</Callout>
+
+<Callout type="info">
+Cada `/30` tem exatamente dois roteadores. É o formato em que a conta de saltos do diagrama vale. Três roteadores na mesma rede mudam o RIP (split horizon) e a conta deixa de ser a do papel.
+</Callout>
+
+## Como executar
+
+<Steps>
+<Step>
+
+Escolha, para o G2, uma das duas colunas de LAN. Não misture as colunas: ilha 2 não fica em `192.168.20.0/24` enquanto a ilha 3 fica em `192.168.3.0/24`.
+
+</Step>
+<Step>
+
+Numere cada enlace do diagrama com `10.A.B.0/30` e os dois hosts.
+
+</Step>
+<Step>
+
+Monte uma lista com uma linha por interface: roteador, interface, endereço, máscara. Ordene por endereço e procure repetição.
+
+</Step>
+<Step>
+
+O outro lado de cada enlace confere a mesma rede e o outro host antes de configurar qualquer coisa.
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Plano único de LAN, todos os enlaces em `/30`, firewall em `10.0.0.0/30`, nenhum endereço repetido.
+
+## Como verificar
+
+A lista ordenada não tem IP igual em duas linhas, e cada `/30` aparece em exatamente dois roteadores.
+
+## Se não funcionar
+
+- **O vizinho anotou `.1` nos dois lados:** vale o diagrama do Comitê, não a memória da equipe.
+- **Endereço `.0`, `.3` ou fora do `/30`:** esse host não existe nessa rede. Volte à tabela de quatro endereços.
+
+<Checklist
+  id="topologia-enderecamento"
+  items={[
+    'Uma coluna de LAN escolhida para o G2',
+    'Cada enlace em 10.A.B.0/30 com .1 e .2',
+    'SP e firewall em 10.0.0.0/30',
+    'Lista ordenada sem IP repetido',
+  ]}
+/>

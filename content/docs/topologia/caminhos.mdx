@@ -1,0 +1,73 @@
+---
+title: Caminho primário e contingência
+description: Semana 2 · escrever, por ilha, os dois caminhos que o traceroute precisa repetir.
+---
+
+## O que fazer
+
+Para cada ilha, escrever o caminho primário até SP, o de contingência e o que acontece quando um enlace da primária é removido.
+
+## Por que fazer
+
+Na avaliação o professor desliga um enlace da primária e o `traceroute` novo tem de seguir a contingência do diagrama. Se o caminho depois do corte depender de qual enlace caiu, e o diagrama só mostra um, a ilha não fecha o teste.
+
+## O que você precisa
+
+- Diagrama de enlaces aprovado entre o Comitê.
+- Plano de endereços, para anotar o IP de cada salto. A regra do IP está em [saltos](/docs/topologia/saltos).
+
+## Como executar
+
+<Steps>
+<Step>
+
+No diagrama, siga da sua ilha até SP pelo caminho com menos enlaces. Esse é o primário. A métrica é a quantidade de enlaces desse caminho.
+
+</Step>
+<Step>
+
+Apague no papel todos os enlaces desse caminho e procure de novo. O mais curto que ainda chega a SP, sem reutilizar enlace da primária, é a contingência.
+
+</Step>
+<Step>
+
+Agora apague um enlace da primária por vez, deixando os outros no lugar. Anote o caminho vencedor de cada corte. O professor escolhe o enlace na hora, então cada corte precisa cair na mesma contingência desenhada.
+
+</Step>
+<Step>
+
+Preencha uma linha por ilha na tabela do Comitê. SP não tem caminho até si: a linha de SP registra só o próximo salto do firewall.
+
+| Ilha | Métrica primária | Caminho primário | Métrica da contingência | Caminho de contingência | Algum corte muda o caminho? |
+|---|---|---|---|---|---|
+| PR | a preencher | a preencher | a preencher | a preencher | sim ou não |
+
+</Step>
+</Steps>
+
+<Callout type="warn">
+Métrica igual nos dois caminhos é empate. Não entregue a tabela assim: resolva em [empates](/docs/topologia/empates) e só então copie os números.
+</Callout>
+
+## Resultado esperado
+
+Sete linhas (PR a BA) com primária mais curta que a contingência, e a coluna do corte em "não". A linha de SP só aponta o firewall.
+
+## Como verificar
+
+Outra equipe repete a conta de uma ilha que não é a dela. Os IPs e a métrica batem com a sua linha.
+
+## Se não funcionar
+
+- **Cortes diferentes produzem contingências diferentes:** o desenho ainda não serve para a avaliação. Acrescente ou tire enlace e refaça a tabela inteira, não só a ilha que você olhou.
+- **A contingência passa por um enlace da primária:** ela não sobrevive ao corte. Volte ao passo 2.
+
+<Checklist
+  id="topologia-caminhos"
+  items={[
+    'Primária e contingência escritas para as 7 ilhas',
+    'Cada enlace da primária foi cortado no papel',
+    'Todos os cortes caem na contingência desenhada',
+    'Linha de SP só com o próximo salto do firewall',
+  ]}
+/>

@@ -1,0 +1,82 @@
+---
+title: Configurar as interfaces
+description: Semana 4 · endereçar as portas reais com o plano do G2 e o clock no DCE.
+---
+
+## O que fazer
+
+Aplicar nas interfaces do laboratório o mesmo endereçamento que ficou `up/up` no Packet Tracer.
+
+## Por que fazer
+
+O RIP anuncia essas redes. Sem `no shutdown` a porta fica `administratively down`, que foi o estado visto na anamnese. Sem `clock rate` no DCE o serial real não sobe, mesmo que no simulador tenha subido.
+
+## O que você precisa
+
+- Cabos da página anterior.
+- Sessão de console.
+- Plano do G2 e o bloco de interface do [modelo](/docs/referencia/modelo-rip).
+
+## Como executar
+
+<Steps>
+<Step>
+
+No lado DCE, com os nomes e endereços do G2. O bloco é o exemplo SP–PR:
+
+```bash title="Cisco IOS · exemplo, lado DCE"
+configure terminal
+interface Serial0/0/0
+ description Enlace para PR (DCE)
+ ip address 10.1.2.1 255.255.255.252
+ clock rate 64000
+ no shutdown
+end
+```
+
+</Step>
+<Step>
+
+No DTE, o outro endereço do mesmo `/30`, sem `clock rate`. Na LAN, máscara `255.255.255.0`, descrição da ilha e `no shutdown`.
+
+</Step>
+<Step>
+
+`64000` só se o Comitê não tiver escolhido outro valor. O mesmo número em todos os DCE. O RIP não usa essa velocidade.
+
+</Step>
+</Steps>
+
+## Resultado esperado
+
+Porta com cabo em `up/up`. DCE com clock na saída de `show controllers serial`.
+
+## Como verificar
+
+```bash title="Cisco IOS"
+show ip interface brief
+show controllers serial
+```
+
+| Status | Protocol | Leitura |
+|---|---|---|
+| administratively down | down | Faltou `no shutdown` |
+| down | down | Sem cabo, ou serial sem clock no DCE |
+| up | down | Cabo ou clock incompleto, ou o outro lado desligado |
+| up | up | Enlace pronto |
+
+## Se não funcionar
+
+- **`clock rate` recusado:** você está no DTE. O dono do enlace configura o clock.
+- **`up/down` com clock certo:** o outro lado está em shutdown ou o cabo está na porta vizinha. Não troque o IP para forçar.
+- **Endereço recusado como bad mask:** `/30` no IOS é `255.255.255.252`, e os hosts são só `.1` e `.2`.
+
+<Checklist
+  id="deploy-interfaces"
+  items={[
+    'Endereços do G2 nos dois lados',
+    'clock rate só no DCE',
+    'description em toda interface',
+    'Enlaces cabeados em up/up',
+  ]}
+/>

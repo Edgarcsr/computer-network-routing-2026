@@ -1,0 +1,71 @@
+---
+title: Executar traceroute no Packet Tracer
+description: Semana 3 · tracert a partir do PC da ilha, até o servidor que representa a internet.
+---
+
+## O que fazer
+
+Rodar `tracert` em um PC de cada ilha e comparar os IPs com a lista prevista.
+
+## Por que fazer
+
+É a mesma comparação da avaliação, feita enquanto ainda dá para corrigir o diagrama ou o arquivo. O destino no `.pkt` é o servidor `203.0.113.10`.
+
+## O que você precisa
+
+- Tabelas conferidas na página anterior.
+- PC da ilha com gateway certo.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Abra o PC, Desktop, Command Prompt. O comando do PC no Packet Tracer é `tracert`, sem as flags do Ubuntu:
+
+```text
+tracert 203.0.113.10
+```
+
+</Step>
+<Step>
+
+Compare cada linha, até o firewall, com a lista de IPs da ilha. O salto 1 é o gateway. SP cai no salto da métrica mais um. O `FW` cai no salto seguinte, respondendo com `10.0.0.2` se o plano sugerido foi mantido.
+
+</Step>
+<Step>
+
+Guarde o print. Repita nas oito ilhas, inclusive um PC de SP: de SP, o primeiro salto útil depois do gateway já é o firewall.
+
+</Step>
+</Steps>
+
+<Callout type="warn" title="Não rode só no roteador">
+`traceroute` no CLI do roteador começa no vizinho. O salto 1 deixa de ser o gateway e a lista não bate com a da VM. A avaliação sai da estação. Use o PC.
+</Callout>
+
+O `traceroute -n -I` do Ubuntu entra no [deploy](/docs/deploy/testes). Aqui o PC do Packet Tracer não tem essas flags.
+
+## Resultado esperado
+
+O trecho até o `FW` é idêntico ao diagrama. Linhas depois do `FW` são só o servidor fictício.
+
+## Como verificar
+
+Outra pessoa lê o print e o diagrama lado a lado, sem olhar a tabela de roteamento.
+
+## Se não funcionar
+
+- **Para no primeiro salto:** gateway do PC errado, ou a LAN do roteador está down.
+- **Chega a SP e para:** falta a estática em SP, o `passive-interface` não é o problema da ida, ou o `FW` está down.
+- **Chega ao `FW` e não volta:** rota de retorno ausente no `FW`. A ida pode estar certa.
+- **IP no meio diferente do diagrama:** métrica empatada ou enlace que não era o da primária. Veja `show ip route` nessa ilha.
+
+<Checklist
+  id="simulacao-traceroute"
+  items={[
+    'tracert no PC, não no CLI do roteador',
+    'Caminho até o FW igual ao diagrama',
+    'Print de cada ilha guardado',
+  ]}
+/>

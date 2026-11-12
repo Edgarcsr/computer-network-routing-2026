@@ -5,25 +5,25 @@ description: Semana 3 · validar a rede inteira no Packet Tracer antes do labora
 
 **Entrega:** arquivo `.pkt` + evidências (prints de `show ip route` e `tracert`). **Ponto de controle G3:** simulação validada.
 
-A rede inteira roda em um único arquivo `.pkt` (roteadores 2811 com módulos seriais), com os mesmos endereços e as mesmas rotas previstas.
+A rede inteira roda num arquivo só, com roteadores 2811, os endereços do G2 e as rotas previstas. O 2811 é o modelo que o Packet Tracer tem para este laboratório; a quantidade de módulos seriais copia o inventário.
 
-## Procedimentos previstos
+<Callout type="warn">
+Use o simulador para validar caminhos, não tempos: o Packet Tracer converge diferente do equipamento real. Interface e IP que não passaram no G2 não entram no arquivo.
+</Callout>
 
-1. Montar a topologia no Cisco Packet Tracer.
-2. Configurar os roteadores.
-3. Configurar RIP v2.
-4. Configurar a rota padrão.
-5. Verificar as tabelas de roteamento.
-6. Executar traceroute.
-7. Simular a falha de enlaces.
-8. Verificar convergência e rotas alternativas.
+## Ordem
 
-```bash title="Cisco IOS · Comandos de referência"
+1. [Montar a topologia](/docs/simulacao/montar-pkt).
+2. [Endereçar as interfaces](/docs/simulacao/interfaces-pkt).
+3. [Configurar RIP v2](/docs/simulacao/rip-v2).
+4. [Configurar a rota padrão](/docs/simulacao/rota-padrao).
+5. [Verificar as tabelas](/docs/simulacao/verificar-rotas).
+6. [Executar traceroute](/docs/simulacao/traceroute-pkt) a partir do PC da ilha.
+7. [Simular a falha](/docs/simulacao/falha) de cada enlace da primária.
+8. [Verificar a convergência](/docs/simulacao/convergencia) e devolver a primária.
+
+```bash title="Cisco IOS · comandos desta etapa"
 show ip route
 show ip protocols
 show running-config
 ```
-
-<Callout type="warn">
-Use o simulador para validar **caminhos**, não tempos: o Packet Tracer converge diferente do equipamento real. As configurações só serão apresentadas depois da aprovação da topologia (G2).
-</Callout>

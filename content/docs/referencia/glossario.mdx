@@ -13,40 +13,62 @@ Módulo de interface que se encaixa no roteador e adiciona portas, como as seria
 
 ## Clock rate
 
-Velocidade de clock definida no lado DCE. Sem ele, o enlace serial não sobe.
+Velocidade de clock definida no lado DCE. Sem ele, o enlace serial do equipamento real não sobe. O RIP não usa esse valor na métrica.
 
 ## RIP v2
 
-Protocolo de roteamento por vetor de distância, usado entre os roteadores. Sua métrica é a **contagem de saltos**, e ele ignora a largura de banda.
+Protocolo de roteamento por vetor de distância, usado entre os roteadores. Sua métrica é a **contagem de saltos**, e ele ignora a largura de banda. Métrica 16 significa inalcançável.
+
+## Métrica
+
+Na rota padrão, a métrica no roteador da ilha é a quantidade de enlaces de backbone até SP. Na tabela ela vem depois da distância administrativa: `[120/2]` é RIP (120) com 2 saltos. A padrão aprendida aparece como `R*`. Em SP ela é estática, `S*`. O `via` é só o próximo roteador. A lista inteira de IPs do traceroute está em [saltos](/docs/topologia/saltos).
+
+## network
+
+No IOS, o `network` do RIP não leva máscara. `network 10.0.0.0` liga todas as interfaces `10.x`. Um `network 10.2.5.0` é gravado como `network 10.0.0.0`.
 
 ## no auto-summary
 
-Comando do RIP que impede o resumo automático de redes. É obrigatório (R1).
+Comando do RIP que desliga o resumo automático. É obrigatório (R1). Cada rede sai com a máscara configurada: `/24` na LAN, `/30` no enlace.
+
+Sem o comando, o IOS resume no limite de classe. As LANs `192.168.x.0/24` já estão nesse limite. Os enlaces `10.A.B.0/30` são pedaços de `10.0.0.0/8`: anunciados por uma interface que não é `10.x`, viram um único `10.0.0.0/8`. O caminho específico some e o failover deixa de ser o do diagrama.
+
+## Timers do RIP
+
+Padrão do IOS: update 30 s, invalid 180 s, holddown 180 s, flush 240 s. `timers basic` muda os quatro e tem de ser idêntico nos oito roteadores. A referência de 4 minutos da avaliação é o flush.
+
+## Atualização disparada
+
+Quando a interface cai, o RIP avisa os vizinhos na hora, sem esperar os 30 s. Um `shutdown` ou um cabo fora costuma convergir em segundos. A espera de 180 s é o outro caso: a interface continua up e as atualizações param.
 
 ## Rota padrão
 
-`0.0.0.0/0`: caminho para a internet. Fica estática só em SP, que a anuncia por RIP com `default-information originate`.
+`0.0.0.0/0`: caminho para a internet. Fica estática só em SP, que a anuncia por RIP com `default-information originate`. O vizinho recebe essa rota com métrica 1.
 
 ## passive-interface
 
-Faz a interface da LAN da ilha não enviar atualizações RIP (R6).
+Faz a interface da LAN da ilha não enviar atualizações RIP (R6). A rede da LAN continua sendo anunciada pelos enlaces do backbone. Em SP, a interface do firewall também fica passiva para o RIP não sair do backbone.
 
 ## Rota primária e rota de contingência
 
-A primária é o caminho de menos saltos até SP. A contingência é o caminho alternativo que passa a valer quando um enlace da primária cai.
+A primária é o caminho de menos saltos até SP. A contingência é o caminho alternativo, sem enlace em comum com a primária, que passa a valer quando um enlace da primária cai.
 
 ## Empate de saltos
 
-Quando dois caminhos têm o mesmo número de saltos, o IOS balanceia entre até 4 caminhos e o traceroute alterna. Precisa ser resolvido no desenho.
+Quando dois caminhos têm a mesma métrica, o IOS reparte entre até 4 caminhos e o traceroute deixa de seguir uma linha só. No anel simples de 8, a ilha oposta a SP empata em 4. O jeito de desfazer está em [empates](/docs/topologia/empates).
+
+## offset-list
+
+Soma um número à métrica RIP recebida (`in`) ou anunciada (`out`) numa interface. O `0` no lugar da access-list significa todas as rotas; não se cria access-list 0. Só entra no projeto para um empate que a topologia não desfez, com valor e interface escritos no diagrama (R4). `in` muda a tabela deste roteador; `out` muda a do vizinho.
 
 ## Convergência
 
-Tempo que a rede leva para se reorganizar depois de uma falha. Se a queda for "silenciosa", a rota só é invalidada após 180 s e pode ficar em holddown por mais 180 s.
+Tempo até a tabela passar a usar o caminho que sobrou. Com a interface down, vale a atualização disparada. Com vizinho calado e interface up, a rota é invalidada aos 180 s, pode ficar em holddown e sai da tabela no flush (240 s). O Packet Tracer não serve para medir esse tempo.
 
 ## Traceroute
 
-`traceroute -n -I <site>` no Ubuntu usa ICMP. O padrão usa UDP, que firewalls costumam bloquear, mostrando `* * *`.
+`traceroute -n -I` no Ubuntu: `-n` não resolve nome, `-I` usa ICMP. O padrão sem `-I` é UDP, e o firewall responde com `* * *`. O IP de cada salto é o da interface virada para o salto anterior. A comparação com o diagrama vai até o firewall. No PC do Packet Tracer o comando é `tracert`, sem essas flags.
 
 ## Rede de retorno
 
-Caminho que o firewall Linux usa para devolver respostas às ilhas: rotas estáticas `192.168.0.0/16` e `10.0.0.0/8` via SP, mais `ip_forward` e NAT (masquerade).
+Caminho que o firewall Linux usa para devolver respostas às ilhas: rotas `192.168.0.0/16` e `10.0.0.0/8` via SP, mais `ip_forward` e NAT (masquerade) na interface da internet. O `/16` cobre as duas propostas de LAN.

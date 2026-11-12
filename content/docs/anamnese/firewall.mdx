@@ -1,0 +1,84 @@
+---
+title: Levantar o firewall Linux
+description: Equipe SP · registrar o firewall que faz NAT e o caminho de volta, sem alterar regra nenhuma.
+---
+
+## O que fazer
+
+Descobrir onde está o firewall Linux, quais interfaces ele usa e se já faz encaminhamento e NAT.
+
+## Por que fazer
+
+O R5 depende desse equipamento: sem rota de volta e sem NAT, o `traceroute` até a internet morre mesmo com o RIP certo. A semana 1 só registra. A integração é no [deploy](/docs/deploy/firewall).
+
+## O que você precisa
+
+- Acesso de leitura ao firewall, pedido ao professor.
+- Cabo console ou SSH, o que o laboratório já usar.
+
+## Como executar
+
+<Steps>
+<Step>
+
+Anote o sistema, sem mudar pacote nenhum:
+
+```bash title="Linux · só leitura"
+cat /etc/os-release
+```
+
+</Step>
+<Step>
+
+Anote interfaces, endereços e rotas:
+
+```bash title="Linux · só leitura"
+ip -br addr
+ip route
+sysctl net.ipv4.ip_forward
+```
+
+</Step>
+<Step>
+
+Anote se já existe NAT. Rode os dois; um deles pode vir vazio, conforme a ferramenta que o firewall usa:
+
+```bash title="Linux · só leitura"
+iptables -t nat -S
+nft list ruleset
+```
+
+</Step>
+<Step>
+
+Pelo cabo e pelos endereços, marque qual interface aponta para SP e qual aponta para a internet. Registre no [modelo do inventário](/docs/anamnese/modelo-inventario).
+
+</Step>
+</Steps>
+
+<Callout type="warn" title="Não configurar agora">
+Não use `sysctl -w`, não acrescente rota e não crie regra de NAT nesta semana. Se `ip_forward` estiver em 0, isso é um dado do inventário, não um defeito a corrigir hoje.
+</Callout>
+
+## Resultado esperado
+
+Uma ficha do firewall: sistema, interface para SP, interface para a internet, valor de `ip_forward` e se já há masquerade.
+
+## Como verificar
+
+Outra pessoa da equipe SP lê a ficha e aponta, no cabo, as duas interfaces sem consultar o equipamento de novo.
+
+## Se não funcionar
+
+- **Sem senha ou sem acesso:** registre "sem acesso" e leve ao G1. Não chute regra de NAT.
+- **`nft` ou `iptables` recusados:** falta permissão. Peça um shell de leitura; não mude o sudoers.
+
+<Checklist
+  id="anamnese-firewall"
+  items={[
+    'Sistema do firewall anotado',
+    'Interfaces de SP e da internet identificadas',
+    'ip_forward e NAT registrados',
+    'Nenhuma regra alterada',
+  ]}
+/>

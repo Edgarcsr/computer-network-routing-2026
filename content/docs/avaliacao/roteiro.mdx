@@ -59,6 +59,12 @@ O caminho até o firewall Linux deve bater salto a salto com o diagrama. O site 
 </Step>
 </Steps>
 
+A lista de IPs de cada salto se monta em [saltos](/docs/topologia/saltos). O ensaio, com cronômetro, está nos [testes do deploy](/docs/deploy/testes).
+
+<Callout type="warn" title="debug ip rip">
+O debug despeja cada atualização no console. Use só na janela do teste e encerre com `undebug all`. Quem decide se convergiu é o `show ip route`.
+</Callout>
+
 <Callout type="warn">
 Nenhuma outra equipe mexe na rede durante a avaliação de uma ilha, porque desligar um enlace afeta outras ilhas.
 </Callout>

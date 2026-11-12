@@ -1,0 +1,81 @@
+---
+title: Simular a falha de um enlace
+description: Semana 3 · derrubar, no Packet Tracer, um enlace da rota primária sem apagar a configuração.
+---
+
+## O que fazer
+
+Desligar uma interface que pertence à primária e observar o que a tabela faz.
+
+## Por que fazer
+
+O professor escolhe um enlace da primária na avaliação. O G3 pede esse failover ainda no simulador. Apagar IP ou `clock rate` estraga o teste: o ensaio é só de queda.
+
+## O que você precisa
+
+- `tracert` da primária já conferido.
+- A lista de cortes da [tabela de caminhos](/docs/topologia/caminhos).
+
+## Como executar
+
+<Steps>
+<Step>
+
+Anote o `via` da rota `R*` e o horário. Escolha um enlace que esse caminho usa.
+
+</Step>
+<Step>
+
+Numa das pontas desse enlace:
+
+```bash title="Cisco IOS"
+configure terminal
+interface Serial0/0/0
+ shutdown
+end
+```
+
+O nome é o da interface real do enlace, não obrigatoriamente `Serial0/0/0`. Não apague o `ip address`.
+
+</Step>
+<Step>
+
+Na ilha, acompanhe a troca:
+
+```bash title="Cisco IOS"
+show ip route
+```
+
+Quando a padrão apontar para a contingência, rode de novo o `tracert` no PC.
+
+</Step>
+<Step>
+
+Repita para cada enlace da primária se o diagrama afirma que todos os cortes caem no mesmo caminho. Um corte só não cobre o que o professor pode escolher.
+
+</Step>
+</Steps>
+
+O que a métrica deve mostrar, e por que o tempo do Packet Tracer não vale como prova, está em [convergência](/docs/simulacao/convergencia).
+
+## Resultado esperado
+
+Com a interface em shutdown, o `tracert` segue a contingência do diagrama e ainda passa por SP e pelo `FW`.
+
+## Como verificar
+
+O print do segundo `tracert` bate com a coluna de contingência. `show ip interface brief` mostra essa interface `administratively down` e as outras `up/up`.
+
+## Se não funcionar
+
+- **A tabela não muda:** o `shutdown` foi numa interface que não está na primária, ou há outro enlace de mesma métrica.
+- **O caminho novo não é o do diagrama:** a contingência foi mal contada. Corrija o desenho com o Comitê antes do laboratório.
+
+<Checklist
+  id="simulacao-falha"
+  items={[
+    'Queda feita com shutdown, sem apagar IP',
+    'Cada enlace da primária testado',
+    'tracert da contingência guardado',
+  ]}
+/>
